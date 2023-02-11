@@ -1,44 +1,17 @@
-import './App.css';
-import "firebase/auth";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { useState } from 'react';
-import { auth } from './firebaseConfig';
+import React from "react";
+import { Login } from "./Login";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Dashboard } from "./Dashboard";
 
-function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-
-  const handleLogin = (e) => {
-    e.preventDefault();   
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user)
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
+function App() {
   return (
-    <form onSubmit={handleLogin}>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-      />
-      <button type="submit">Login</button>
-      {error && <p>{error}</p>}
-    </form>
-  );
+    <BrowserRouter>
+      <Routes>
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="/" element={<Login />} />
+      </Routes>
+    </BrowserRouter>
+  )
 }
 
-export default Login;
+export default App;
