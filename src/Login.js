@@ -2,12 +2,17 @@ import "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from 'react';
 import { auth } from './firebaseConfig';
+import { Input, Button } from 'rsuite';
+import "rsuite/dist/rsuite.min.css";
+import { Logo } from "./Logo";
+import "./Login.css";
+
+
 
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
-
     const handleLogin = (e) => {
         e.preventDefault();
         signInWithEmailAndPassword(auth, email, password)
@@ -16,28 +21,48 @@ function Login() {
                 console.log(user)
             })
             .catch((error) => {
-                console.error(error);
+                const errorMessage = error.message;
+                setError(errorMessage);
             });
     };
 
     return (
-        <form onSubmit={handleLogin}>
-            <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-            />
-            <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-            />
-            <button type="submit">Login</button>
-            {error && <p>{error}</p>}
-        </form>
+        <div className="block">
+            <form onSubmit={handleLogin}>
+                <div className="logo">
+                    <Logo></Logo>
+                </div>
+                <Input
+                    size="md"
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={e => setEmail(e)}
+                />
+                <Input
+                    size="md"
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={e => setPassword(e)}
+                />
+                <Button type="submit" appearance="default">Connexion</Button>
+                {error && <p className="error-message">{convertErrorMessage(error)}</p>}
+            </form></div>
+
     );
+}
+
+function convertErrorMessage(errorMessage) {
+    switch (errorMessage) {
+        case 'Firebase: Error (auth/user-not-found).':
+            return 'Cet utilisateur n\'existe pas';
+        case 'Firebase: Error (auth/wrong-password).':
+            return 'Email ou mot de passe incorrect';
+        default:
+            return errorMessage;
+    }
+
 }
 
 export { Login };

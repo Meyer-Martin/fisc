@@ -1,0 +1,30 @@
+.block {
+    background: linear-gradient(130deg, #304177, #616e97);
+    height: 100vh;
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 50px;
+}
+
+.error-message {
+    color: red;
+    font-size: 1.2em;
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+Input {
+    width: 300px !important;
+    margin-bottom: 10px;
+}
