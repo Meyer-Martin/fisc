@@ -1,5 +1,5 @@
 import "firebase/auth";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
 import { useState } from 'react';
 import { auth } from './firebaseConfig';
 import { Input, Button } from 'rsuite';
@@ -51,6 +51,7 @@ function Login() {
                 />
                 <Button type="submit" appearance="default">Connexion</Button>
                 <Button onClick={signInWithGoogle} appearance="primary">Connexion avec Google</Button>
+                <Button onClick={signInWithGithub} appearance="ghost">Connexion avec Github</Button>
                 {error && <p className="error-message">{convertErrorMessage(error)}</p>}
             </form>
         </div>
@@ -67,7 +68,24 @@ function signInWithGoogle() {
             if (user) {
                 redirectToDashboard();
             }
-        }).catch((error) => {
+        })
+        .catch((error) => {
+            convertErrorMessage(error);
+        });
+}
+
+function signInWithGithub() {
+    const provider = new GithubAuthProvider();
+
+    signInWithPopup(auth, provider)
+        .then((result) => {
+            const user = result.user;
+            console.log(user);
+            if (user) {
+                redirectToDashboard();
+            }
+        })
+        .catch((error) => {
             convertErrorMessage(error);
         });
 }
