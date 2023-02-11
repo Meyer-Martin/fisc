@@ -1,11 +1,6 @@
 A faire:
-Crée la base mongodb
 
-Librairy rsuite
-
-Page de login /register
-
-Si on as crée un nouveau cloud
+Si on a crée un nouveau cloud
 Sinon la liste des cloud
 
 
