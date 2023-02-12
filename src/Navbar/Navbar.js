@@ -1,5 +1,5 @@
-import './Navbar.css';
-import { Logo } from './Logo';
+import '../Navbar/Navbar.css';
+import { Logo } from '../img/Logo';
 import { Button,  } from 'rsuite';
 
 function Navbar() {

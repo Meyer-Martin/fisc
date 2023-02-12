@@ -1,7 +1,8 @@
-import { Navbar } from "./Navbar";
-import './Dashboard.css';
-import edit from "./editer.png"
+import { Navbar } from "../Navbar/Navbar";
+import '../Dashboard/Dashboard';
+import edit from "../img/editer.png"
 import { Toggle } from 'rsuite';
+import "./Dashboard.css"
 
 function Dashboard() {
     return (

@@ -1,10 +1,10 @@
 import "firebase/auth";
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
 import { useState } from 'react';
-import { auth } from './firebaseConfig';
+import { auth } from '../firebase/firebaseConfig';
 import { Input, Button } from 'rsuite';
 import "rsuite/dist/rsuite.min.css";
-import { Logo } from "./Logo";
+import { Logo } from "../img/Logo";
 import "./Login.css";
 
 
