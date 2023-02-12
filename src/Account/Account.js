@@ -28,7 +28,7 @@ function Account() {
         {userData.uid !== undefined && (
           <>
             <div className="user-info">
-              <img src={userData.photoURL} alt={userData.displayName} />
+              {/* <img src={userData.photoURL} alt={userData.displayName} /> */}
               <p>Nom d'affichage: {userData.displayName}</p>
               <p>Email: {userData.email}</p>
               <p>
