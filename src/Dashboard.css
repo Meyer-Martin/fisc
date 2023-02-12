@@ -1,0 +1,39 @@
+.main {
+    height: 100vh;
+    background: linear-gradient(130deg, #304177, #616e97);
+    display: flex;
+    flex-direction: column;
+}
+
+.box {
+    margin-top: 100px;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+.box-container {
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    border: 1px solid white;
+    border-radius: 8px;
+    color: white;
+    padding: 10px;
+    font-size: 1.2em;
+}
+
+.edit {
+    width: 100px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.edit-icon {
+    height: 30px;
+    filter: invert(100%) sepia(100%) saturate(17%) hue-rotate(205deg) brightness(104%) contrast(100%);
+}

@@ -1,6 +1,6 @@
 import './Navbar.css';
 import { Logo } from './Logo';
-import { Button } from 'rsuite';
+import { Button,  } from 'rsuite';
 
 function Navbar() {
     return (
