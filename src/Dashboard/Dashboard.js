@@ -1,5 +1,5 @@
 import { Navbar } from "../Navbar/Navbar";
-import '../Dashboard/Dashboard';
+import '../Dashboard/Dashboard.css';
 import edit from "../img/editer.png"
 import { Toggle } from 'rsuite';
 import "./Dashboard.css"
