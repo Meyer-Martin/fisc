@@ -1,6 +1,11 @@
+import { Navbar } from "./Navbar";
+
 function Dashboard() {
     return (
-        <h1>Bienvenue sur la page Dashboard</h1>
+        <>
+            <Navbar />
+            <h1>Bienvenue sur la page Dashboard</h1>
+        </>
     );
 }
 
