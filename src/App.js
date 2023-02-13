@@ -8,7 +8,7 @@ import { getAuth } from "firebase/auth";
 function App() {
    const auth = getAuth();
     const user = auth.currentUser;
-    if (user) {
+    // if (user) {
       return (
         <BrowserRouter>
           <Routes>
@@ -18,15 +18,15 @@ function App() {
           </Routes>
         </BrowserRouter>
        )
-    } else {
-      return (
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Login />} />
-          </Routes>
-        </BrowserRouter>
-      )
-    }
-  };
+    // } else {
+    //   return (
+    //     <BrowserRouter>
+    //       <Routes>
+    //         <Route path="/" element={<Login />} />
+    //       </Routes>
+    //     </BrowserRouter>
+    //   )
+    // }
+};
 
 export default App;

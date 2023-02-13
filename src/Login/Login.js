@@ -6,8 +6,7 @@ import { Input, Button } from 'rsuite';
 import "rsuite/dist/rsuite.min.css";
 import { Logo } from "../img/Logo";
 import "./Login.css";
-import { useLocation } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
 
 
 function Login() {
@@ -15,6 +14,7 @@ function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
 
+    const navigate = useNavigate();
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -22,7 +22,7 @@ function Login() {
             .then((userCredential) => {
                 const user = userCredential.user;
                 if (user) {
-                    redirectToDashboard();
+                    redirectToDashboard(navigate);
                 }
             })
             .catch((error) => {
@@ -52,15 +52,15 @@ function Login() {
                     onChange={e => setPassword(e)}
                 />
                 <Button type="submit" appearance="default">Connexion</Button>
-                <Button onClick={signInWithGoogle} appearance="primary">Connexion avec Google</Button>
-                <Button onClick={signInWithGithub} appearance="ghost">Connexion avec Github</Button>
+                <Button onClick={() => signInWithGoogle(navigate)} appearance="primary">Connexion avec Google</Button>
+                <Button onClick={() => signInWithGithub(navigate)} appearance="ghost">Connexion avec Github</Button>
                 {error && <p className="error-message">{convertErrorMessage(error)}</p>}
             </form>
         </div>
     );
 }
 
-function signInWithGoogle() {
+function signInWithGoogle(navigate) {
     const provider = new GoogleAuthProvider();
 
     signInWithPopup(auth, provider)
@@ -68,7 +68,7 @@ function signInWithGoogle() {
             const user = result.user;
             console.log(user);
             if (user) {
-                redirectToDashboard();
+                redirectToDashboard(navigate);
             }
         })
         .catch((error) => {
@@ -76,7 +76,7 @@ function signInWithGoogle() {
         });
 }
 
-function signInWithGithub() {
+function signInWithGithub(navigate) {
     const provider = new GithubAuthProvider();
 
     signInWithPopup(auth, provider)
@@ -84,7 +84,7 @@ function signInWithGithub() {
             const user = result.user;
             console.log(user);
             if (user) {
-                redirectToDashboard();
+                redirectToDashboard(navigate);
             }
         })
         .catch((error) => {
