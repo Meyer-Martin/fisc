@@ -6,6 +6,8 @@ import { Input, Button } from 'rsuite';
 import "rsuite/dist/rsuite.min.css";
 import { Logo } from "../img/Logo";
 import "./Login.css";
+import { useLocation } from 'react-router-dom';
+
 
 
 function Login() {
@@ -90,9 +92,16 @@ function signInWithGithub() {
         });
 }
 
-// TODO Rediriger vers la page /dashboard
-function redirectToDashboard() {
 
+function redirectToDashboard() {
+    //if user connecter redirect to dashboard
+    // const location = useLocation();
+    // if (location.pathname !== "/dashboard") {
+    //     window.location.href = "/dashboard";
+    // }
+
+    // return null;
+    
 }
 
 function convertErrorMessage(errorMessage) {
