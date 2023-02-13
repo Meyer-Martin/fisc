@@ -1,21 +1,28 @@
 import '../Navbar/Navbar.css';
-import { Logo } from '../img/Logo';
-import { Button, } from 'rsuite';
-import { Link } from "react-router-dom";
+import {Logo} from '../img/Logo';
+import {Button,} from 'rsuite';
+import {Link, useNavigate} from "react-router-dom";
 import "firebase/auth";
 
+
 function Navbar() {
+    const navigate = useNavigate();
     return (
         <nav className="navbar">
-            <Link to="/dashboard"><Logo /></Link>
+            <Link to="/dashboard"><Logo/></Link>
             <div className="links">
                 <Link to="/Account"><Button className="my-account" appearance="default">Mon compte</Button></Link>
                 <Link to="/">
-                    <Button className="disconnect" appearance="default">Déconnexion</Button>
+                    <Button onClick={() => redirectToDashboard(navigate)} className="disconnect"
+                            appearance="default">Déconnexion</Button>
                 </Link>
             </div>
         </nav>
     )
 }
 
-export { Navbar }
+function redirectToDashboard(navigate) {
+    navigate('/');
+}
+
+export {Navbar}
