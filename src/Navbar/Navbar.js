@@ -22,8 +22,19 @@ function Navbar() {
     )
 }
 
+function disconnect(navigate) {
+    const auth = getAuth();
+    signOut(auth)
+        .then(() => {
+            redirectToLogin(navigate);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+}
+
 function redirectToLogin(navigate) {
     navigate('/');
 }
 
-export {Navbar}
+export { Navbar }

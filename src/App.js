@@ -29,5 +29,10 @@ function App() {
         // <RedirectToLogin2 />
     }
 }
+*/
+function RedirectToLogin() {
+    const navigate = useNavigate();
+    navigate('/');
+}
 
 export default App;

@@ -1,13 +1,17 @@
 import "firebase/auth";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
-import { useState } from 'react';
-import { auth } from '../firebase/firebaseConfig';
-import { Input, Button } from 'rsuite';
+import {
+    GithubAuthProvider,
+    GoogleAuthProvider,
+    signInWithEmailAndPassword,
+    signInWithPopup
+} from "firebase/auth";
+import { useState} from 'react';
+import {auth} from '../firebase/firebaseConfig';
+import {Button, Input} from 'rsuite';
 import "rsuite/dist/rsuite.min.css";
-import { Logo } from "../img/Logo";
+import {Logo} from "../img/Logo";
 import "./Login.css";
-import { useNavigate } from 'react-router-dom';
-
+import {useNavigate} from 'react-router-dom';
 
 function Login() {
     const [email, setEmail] = useState("martin@gmail.com");
@@ -66,7 +70,6 @@ function signInWithGoogle(navigate) {
     signInWithPopup(auth, provider)
         .then((result) => {
             const user = result.user;
-            console.log(user);
             if (user) {
                 redirectToDashboard(navigate);
             }
@@ -82,7 +85,6 @@ function signInWithGithub(navigate) {
     signInWithPopup(auth, provider)
         .then((result) => {
             const user = result.user;
-            console.log(user);
             if (user) {
                 redirectToDashboard(navigate);
             }
