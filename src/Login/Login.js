@@ -93,15 +93,8 @@ function signInWithGithub() {
 }
 
 
-function redirectToDashboard() {
-    //if user connecter redirect to dashboard
-    // const location = useLocation();
-    // if (location.pathname !== "/dashboard") {
-    //     window.location.href = "/dashboard";
-    // }
-
-    // return null;
-    
+function redirectToDashboard(navigate) {
+    navigate('/dashboard');
 }
 
 function convertErrorMessage(errorMessage) {
