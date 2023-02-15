@@ -27,6 +27,7 @@ function disconnect(navigate) {
     signOut(auth)
         .then(() => {
             redirectToLogin(navigate);
+            console.log("Déconnexion réussie")
         })
         .catch((error) => {
             console.error(error);

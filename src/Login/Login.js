@@ -5,7 +5,7 @@ import {
     signInWithEmailAndPassword,
     signInWithPopup
 } from "firebase/auth";
-import { useState} from 'react';
+import {useEffect, useState} from 'react';
 import {auth} from '../firebase/firebaseConfig';
 import {Button, Input} from 'rsuite';
 import "rsuite/dist/rsuite.min.css";
@@ -17,8 +17,8 @@ function Login() {
     const [email, setEmail] = useState("martin@gmail.com");
     const [password, setPassword] = useState("test123");
     const [error, setError] = useState(null);
-
     const navigate = useNavigate();
+
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -26,6 +26,7 @@ function Login() {
             .then((userCredential) => {
                 const user = userCredential.user;
                 if (user) {
+                    sessionStorage.setItem('user', JSON.stringify(user));
                     redirectToDashboard(navigate);
                 }
             })
@@ -55,6 +56,7 @@ function Login() {
                     value={password}
                     onChange={e => setPassword(e)}
                 />
+
                 <Button type="submit" appearance="default">Connexion</Button>
                 <Button onClick={() => signInWithGoogle(navigate)} appearance="primary">Connexion avec Google</Button>
                 <Button onClick={() => signInWithGithub(navigate)} appearance="ghost">Connexion avec Github</Button>
