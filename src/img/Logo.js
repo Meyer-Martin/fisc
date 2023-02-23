@@ -5,14 +5,14 @@ function Logo() {
              className="css-1j8o68f">
             <defs id="SvgjsDefs3810">
                 <linearGradient id="SvgjsLinearGradient3815">
-                    <stop id="SvgjsStop3816" stop-color="#8f5e25" offset="0"></stop>
-                    <stop id="SvgjsStop3817" stop-color="#fbf4a1" offset="0.5"></stop>
-                    <stop id="SvgjsStop3818" stop-color="#8f5e25" offset="1"></stop>
+                    <stop id="SvgjsStop3816" stopColor="#8f5e25" offset="0"></stop>
+                    <stop id="SvgjsStop3817" stopColor="#fbf4a1" offset="0.5"></stop>
+                    <stop id="SvgjsStop3818" stopColor="#8f5e25" offset="1"></stop>
                 </linearGradient>
                 <linearGradient id="SvgjsLinearGradient3819">
-                    <stop id="SvgjsStop3820" stop-color="#8f5e25" offset="0"></stop>
-                    <stop id="SvgjsStop3821" stop-color="#fbf4a1" offset="0.5"></stop>
-                    <stop id="SvgjsStop3822" stop-color="#8f5e25" offset="1"></stop>
+                    <stop id="SvgjsStop3820" stopColor="#8f5e25" offset="0"></stop>
+                    <stop id="SvgjsStop3821" stopColor="#fbf4a1" offset="0.5"></stop>
+                    <stop id="SvgjsStop3822" stopColor="#8f5e25" offset="1"></stop>
                 </linearGradient>
             </defs>
             <g id="SvgjsG3811" featurekey="symbolFeature-0"

@@ -1,40 +1,61 @@
 .account-page {
-    padding: 30px;
-    text-align: center;
-    background-color: bisque;
-    height: 100vh;
-  }
-  
-  .user-info {
-    display: flex;
-    align-items:  flex-start;
-    margin-top: 50px;
-    margin-left: 100px;
-    margin-bottom: 20px;
-    justify-content: space-between;
-    flex-direction: column;
-    background-color: aqua;
-  }
+  margin: 20px;
+  padding: 20px;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
 
-  .displayName {
-    /*font-size: 10px;*/
-    font-weight: 600;
-    margin-bottom: 10px;
-    display: flex;
-    flex-direction: row;
-  }
+.user-info {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
 
-  .user-actions button {
-    padding: 10px 20px;
-    margin-right: 20px;
-    background-color: chocolate;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .user-actions button:hover {
-    background-color: #357ae8;
-  }
-  
+.user-data {
+  margin-bottom: 10px;
+}
+
+.user-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.form-group {
+  margin: 10px;
+}
+
+.form-label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-control {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.btn-primary {
+  background-color: #0089d7;
+  color: #fff;
+  padding: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #007acc;
+}
+
+.hidden {
+  display: none;
+}
+
