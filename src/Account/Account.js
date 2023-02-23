@@ -24,16 +24,13 @@ function Account() {
     <div>
       <Navbar />
       <div className="account-page">
-        <h1>Mon compte</h1>
+
         {userData.uid !== undefined && (
           <>
             <div className="user-info">
-              {/* <img src={userData.photoURL} alt={userData.displayName} /> */}
-              <p>Nom d'affichage: {userData.displayName}</p>
-              <p>Email: {userData.email}</p>
-              <p>
-                Email vérifié: {userData.emailVerified ? "Oui" : "Non"}
-              </p>
+              <div className="displayName"> Nom d'affichage: {userData.displayName}</div>
+              <div className="userData">Email: {userData.email}</div>
+              <div className="emailVerified">Email vérifié: {userData.emailVerified ? "Oui" : "Non"}</div>
             </div>
             <div className="user-actions">
               <button>Mettre à jour le nom d'affichage</button>
