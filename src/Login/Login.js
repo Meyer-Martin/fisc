@@ -3,15 +3,16 @@ import {
     GithubAuthProvider,
     GoogleAuthProvider,
     signInWithEmailAndPassword,
-    signInWithPopup
+    signInWithPopup,
+    createUserWithEmailAndPassword
 } from "firebase/auth";
-import { useState} from 'react';
-import {auth} from '../firebase/firebaseConfig';
-import {Button, Input} from 'rsuite';
+import { useState } from 'react';
+import { auth } from '../firebase/firebaseConfig';
+import { Button, Input } from 'rsuite';
 import "rsuite/dist/rsuite.min.css";
-import {Logo} from "../img/Logo";
+import { Logo } from "../img/Logo";
 import "./Login.css";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
     const [email, setEmail] = useState("martin@gmail.com");
@@ -23,6 +24,21 @@ function Login() {
     const handleLogin = (e) => {
         e.preventDefault();
         signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                if (user) {
+                    redirectToDashboard(navigate);
+                }
+            })
+            .catch((error) => {
+                const errorMessage = error.message;
+                setError(errorMessage);
+            });
+    };
+
+    const handleSignUp = (e) => {
+        e.preventDefault();
+        createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
                 if (user) {
@@ -56,6 +72,7 @@ function Login() {
                     onChange={e => setPassword(e)}
                 />
                 <Button type="submit" appearance="default">Connexion</Button>
+                <Button onClick={handleSignUp} appearance="primary">Créer un compte</Button>
                 <Button onClick={() => signInWithGoogle(navigate)} appearance="primary">Connexion avec Google</Button>
                 <Button onClick={() => signInWithGithub(navigate)} appearance="ghost">Connexion avec Github</Button>
                 {error && <p className="error-message">{convertErrorMessage(error)}</p>}
@@ -94,7 +111,6 @@ function signInWithGithub(navigate) {
         });
 }
 
-
 function redirectToDashboard(navigate) {
     navigate('/dashboard');
 }
@@ -105,10 +121,13 @@ function convertErrorMessage(errorMessage) {
             return 'Cet utilisateur n\'existe pas';
         case 'Firebase: Error (auth/wrong-password).':
             return 'Email ou mot de passe incorrect';
+        case 'Firebase: Error (auth/email-already-in-use).':
+            return "L'email est déjà utilisé par un autre compte";
+        case 'Firebase: Error (auth/weak-password).':
+            return 'Le mot de passe doit avoir au moins 6 caractères';
         default:
             return errorMessage;
     }
-
 }
 
 export { Login };
