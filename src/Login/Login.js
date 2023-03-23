@@ -4,18 +4,18 @@ import {
     GoogleAuthProvider,
     signInWithEmailAndPassword,
     signInWithPopup,
-    createUserWithEmailAndPassword
+    createUserWithEmailAndPassword,
+    updateProfile
 } from "firebase/auth";
-import { useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 import { auth } from '../firebase/firebaseConfig';
-import { Button, Input } from 'rsuite';
 import "rsuite/dist/rsuite.min.css";
-import { Logo } from "../img/Logo";
 import "./Login.css";
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
     const [email, setEmail] = useState("martin@gmail.com");
+    const [name, setName] = useState("Martin");
     const [password, setPassword] = useState("test123");
     const [error, setError] = useState(null);
 
@@ -39,8 +39,12 @@ function Login() {
     const handleSignUp = (e) => {
         e.preventDefault();
         createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
+            .then(async (userCredential) => {
                 const user = userCredential.user;
+                await updateProfile(user, {
+                    displayName: name,
+                });
+
                 if (user) {
                     redirectToDashboard(navigate);
                 }
@@ -51,32 +55,74 @@ function Login() {
             });
     };
 
+    const loginBtn = useRef();
+    const signupBtn = useRef();
+
+    useEffect(() => {
+        const handleLoginClick = (e) => {
+            let parent = e.target.parentNode.parentNode;
+            Array.from(e.target.parentNode.parentNode.classList).find((element) => {
+                if (element !== 'slide-up') {
+                    parent.classList.add('slide-up');
+                } else {
+                    signupBtn.current.parentNode.classList.add('slide-up');
+                    parent.classList.remove('slide-up');
+                }
+            });
+        };
+
+        const handleSignupClick = (e) => {
+            let parent = e.target.parentNode;
+            Array.from(e.target.parentNode.classList).find((element) => {
+                if (element !== 'slide-up') {
+                    parent.classList.add('slide-up');
+                } else {
+                    loginBtn.current.parentNode.parentNode.classList.add('slide-up');
+                    parent.classList.remove('slide-up');
+                }
+            });
+        };
+
+        loginBtn?.current.addEventListener('click', handleLoginClick);
+        signupBtn?.current.addEventListener('click', handleSignupClick);
+
+        return () => {
+            if (loginBtn.current) {
+                loginBtn.current.removeEventListener('click', handleLoginClick);
+            }
+            if (signupBtn.current) {
+                signupBtn.current.removeEventListener('click', handleSignupClick);
+            }
+        };
+    }, []);
+
     return (
-        <div className="block">
-            <form onSubmit={handleLogin}>
-                <div className="logo">
-                    <Logo></Logo>
+        <div className="loginAll loginPage">
+            <div className="form-structor">
+                <div className="signup">
+                    <h2 ref={signupBtn} className="form-title" id="signup"><span>or</span>Sign up</h2>
+                    <div className="form-holder">
+                        <input type="text" className="input" value={name} onChange={e => setName(e.target.value)}/>
+                        <input type="text" className="input" value={email} onChange={e => setEmail(e.target.value)}/>
+                        <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)}/>
+                    </div>
+                    {error && <p className="error-message">{convertErrorMessage(error)}</p>}
+                    <button onClick={handleSignUp} className="submit-btn">Sign up</button>
                 </div>
-                <Input
-                    size="md"
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={e => setEmail(e)}
-                />
-                <Input
-                    size="md"
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={e => setPassword(e)}
-                />
-                <Button type="submit" appearance="default">Connexion</Button>
-                <Button onClick={handleSignUp} appearance="primary">Créer un compte</Button>
-                <Button onClick={() => signInWithGoogle(navigate)} appearance="primary">Connexion avec Google</Button>
-                <Button onClick={() => signInWithGithub(navigate)} appearance="ghost">Connexion avec Github</Button>
-                {error && <p className="error-message">{convertErrorMessage(error)}</p>}
-            </form>
+                <div className="login slide-up">
+                    <div className="center">
+                        <h2 ref={loginBtn} className="form-title" id="login"><span>or</span>Log in</h2>
+                        <div className="form-holder">
+                            <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)}/>
+                            <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} />
+                        </div>
+                        {error && <p className="error-message">{convertErrorMessage(error)}</p>}
+                        <button onClick={handleLogin} className="submit-btn">Log in</button>
+                        <button onClick={() => signInWithGoogle(navigate)} className="submit-btn">Connexion avec Google</button>
+                        <button onClick={() => signInWithGithub(navigate)} className="submit-btn">Connexion avec Github</button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
