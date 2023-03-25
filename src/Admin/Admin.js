@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {getAuth, sendPasswordResetEmail, deleteUser  } from "firebase/auth";
+import { sendPasswordResetEmail  } from "firebase/auth";
 import {Navbar} from "../Navbar/Navbar";
 import {Table, Button} from 'rsuite';
 import {collection, query, getDocs, doc, getDoc, updateDoc  } from "firebase/firestore";
@@ -44,10 +44,10 @@ function Admin() {
     ];
 
     const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
     const [compact] = useState(true);
     const [bordered,] = useState(true);
-    const [noData, setNoData] = React.useState(false);
+    const [noData] = React.useState(false);
     const [autoHeight] = useState(true);
     const [columnKeys] = useState(defaultColumns.map(column => column.key));
 
@@ -92,8 +92,9 @@ function Admin() {
         const q = query(collection(db, "users"));
 
         const querySnapshot = await getDocs(q);
+        const users = [];
         querySnapshot.forEach((doc) => {
-            const user = [{
+            const user = {
                 userId: doc.id,
                 email: doc.data().email,
                 dateCreationAccount: convertDate(doc.data().dateCreationAccount),
@@ -110,9 +111,10 @@ function Admin() {
                     </Button>
                     <Button appearance="link" onClick={() => removeUser(doc.data().user)}>Supprimer le compte</Button>
                 </div>
-            }];
-            setData(user);
+            };
+            users.push(user);
         });
+        setData(users);
     }
 }
 
@@ -124,6 +126,7 @@ function sendPasswordReset(email) {
     sendPasswordResetEmail(auth, email)
         .then(() => {
             console.log('email sent')
+            console.log(email)
         })
         .catch((error) => {
             console.error(error)
@@ -131,7 +134,6 @@ function sendPasswordReset(email) {
 }
 
 async function toggleRole(userId) {
-    console.log(userId);
     // Get role from userId
     const docRef = doc(db, "users", userId);
     const docSnap = await getDoc(docRef);
@@ -153,12 +155,18 @@ async function toggleRole(userId) {
     }
 }
 
-function removeUser(user) {
-    deleteUser(user).then(() => {
-        console.log('user deleted')
-    }).catch((error) => {
-        console.error(error)
-    });
+async function removeUser(userId) {
+    const docRef = doc(db, "users", userId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        await updateDoc(docRef, {
+            status: false
+        });
+    } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+    }
 }
 
 export {Admin};
