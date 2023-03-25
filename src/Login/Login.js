@@ -170,7 +170,8 @@ function storeEmailAndRole(user) {
     setDoc(userRef, {
         role: "USER",
         email: user.email,
-        dateCreationAccount: new Date()
+        dateCreationAccount: new Date(),
+        status: true
     });
 }
 
