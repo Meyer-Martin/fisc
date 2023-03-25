@@ -1,13 +1,14 @@
 import React, {useState} from "react";
 import {getAuth, sendPasswordResetEmail, deleteUser  } from "firebase/auth";
 import {Navbar} from "../Navbar/Navbar";
-import {Table, Toggle, TagPicker, Button} from 'rsuite';
-import {collection, query, where, getDocs} from "firebase/firestore";
-import {db} from "../firebase/firebaseConfig";
+import {Table, Button} from 'rsuite';
+import {collection, query, getDocs, doc, getDoc, updateDoc  } from "firebase/firestore";
+import {db, auth} from "../firebase/firebaseConfig";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 
 
 const {Column, HeaderCell, Cell} = Table;
-const data = [];
 
 const CompactCell = props => <Cell {...props} style={{padding: 4}}/>;
 const CompactHeaderCell = props => <HeaderCell {...props} style={{padding: 4}}/>;
@@ -22,20 +23,27 @@ function Admin() {
             width: 130
         },
         {
-            key: 'date',
-            label: 'Date',
+            key: 'dateCreationAccount',
+            label: 'Date de création du compte',
             fixed: true,
-            width: 70
+            width: 120
+        },
+        {
+            key: 'dateLastConnection',
+            label: 'Date de dernière connexion',
+            fixed: true,
+            width: 120
         },
         {
             key: 'action',
             label: 'Action',
             fixed: true,
-            width: 300
+            width: 700
 
         }
     ];
 
+    const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [compact] = useState(true);
     const [bordered,] = useState(true);
@@ -52,6 +60,7 @@ function Admin() {
 
     return (
         <div>
+            <Navbar/>
             <div style={{height: autoHeight ? 'auto' : 400}}>
                 <Table
                     loading={false}
@@ -84,32 +93,72 @@ function Admin() {
 
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-            // doc.data() is never undefined for query doc snapshots
-            console.log(doc.id, " => ", doc.data());
+            const user = [{
+                userId: doc.id,
+                email: doc.data().email,
+                dateCreationAccount: convertDate(doc.data().dateCreationAccount),
+                dateLastConnection: 'zdazdzad',
+                action: <div>
+                    <Button appearance="link" onClick={() => sendPasswordReset(doc.data().email)}>
+                        <FontAwesomeIcon icon={faEnvelope} />
+                    </Button>
+
+                    <Button appearance="link" onClick={() => toggleRole(doc.id)}>
+                        {
+                        doc.data().role === 'ADMIN' ? 'Retirer les droits' : 'Donner les droits'
+                        }
+                    </Button>
+                    <Button appearance="link" onClick={() => removeUser(doc.data().user)}>Supprimer le compte</Button>
+                </div>
+            }];
+            setData(user);
         });
     }
 }
 
-// function sendPasswordResetEmail(userId) {
-//     sendPasswordResetEmail(auth, email)
-//         .then(() => {
-//             // Password reset email sent!
-//             // ..
-//         })
-//         .catch((error) => {
-//             const errorCode = error.code;
-//             const errorMessage = error.message;
-//             // ..
-//         });
-// }
+function convertDate(date) {
+    return date.toDate().toLocaleDateString();
+}
 
-// function deleteUser(userId) {
-//     deleteUser(user).then(() => {
-//         // User deleted.
-//     }).catch((error) => {
-//         // An error ocurred
-//         // ...
-//     });
-// }
+function sendPasswordReset(email) {
+    sendPasswordResetEmail(auth, email)
+        .then(() => {
+            console.log('email sent')
+        })
+        .catch((error) => {
+            console.error(error)
+        });
+}
+
+async function toggleRole(userId) {
+    console.log(userId);
+    // Get role from userId
+    const docRef = doc(db, "users", userId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const role = docSnap.data().role;
+        if (role === 'ADMIN') {
+            await updateDoc(docRef, {
+                role: 'USER'
+            });
+        } else if (role === 'USER') {
+            await updateDoc(docRef, {
+                role: 'ADMIN'
+            });
+        }
+    } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+    }
+}
+
+function removeUser(user) {
+    deleteUser(user).then(() => {
+        console.log('user deleted')
+    }).catch((error) => {
+        console.error(error)
+    });
+}
 
 export {Admin};
