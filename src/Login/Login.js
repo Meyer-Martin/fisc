@@ -8,10 +8,11 @@ import {
     updateProfile
 } from "firebase/auth";
 import {useEffect, useRef, useState} from 'react';
-import { auth } from '../firebase/firebaseConfig';
+import { auth, db } from '../firebase/firebaseConfig';
 import "rsuite/dist/rsuite.min.css";
 import "./Login.css";
 import { useNavigate } from 'react-router-dom';
+import { doc, setDoc } from "firebase/firestore";
 
 function Login() {
     const [email, setEmail] = useState("martin@gmail.com");
@@ -41,6 +42,8 @@ function Login() {
         createUserWithEmailAndPassword(auth, email, password)
             .then(async (userCredential) => {
                 const user = userCredential.user;
+                const userId = user.uid;
+                addRoles(userId);
                 await updateProfile(user, {
                     displayName: name,
                 });
@@ -133,6 +136,9 @@ function signInWithGoogle(navigate) {
     signInWithPopup(auth, provider)
         .then((result) => {
             const user = result.user;
+            const userId = user.uid;
+            addRoles(userId);
+
             if (user) {
                 redirectToDashboard(navigate);
             }
@@ -141,13 +147,14 @@ function signInWithGoogle(navigate) {
             convertErrorMessage(error);
         });
 }
-
 function signInWithGithub(navigate) {
     const provider = new GithubAuthProvider();
 
     signInWithPopup(auth, provider)
         .then((result) => {
             const user = result.user;
+            const userId = user.uid;
+            addRoles(userId);
             if (user) {
                 redirectToDashboard(navigate);
             }
@@ -159,6 +166,13 @@ function signInWithGithub(navigate) {
 
 function redirectToDashboard(navigate) {
     navigate('/dashboard');
+}
+
+function addRoles(userId) {
+    const userRef = doc(db, "users", userId);
+    setDoc(userRef, {
+        role: "USER"
+    });
 }
 
 function convertErrorMessage(errorMessage) {
