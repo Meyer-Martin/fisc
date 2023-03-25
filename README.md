@@ -1,9 +1,10 @@
 A faire:
 
 Page d'admin :
-Modifier rôles 
-reinitialisé mdp
-voir date de dernière connection
+voir date de dernière connexion
+design poage admin
+bloque page admin si user pas admin
+pop up message sur sucess ou erreur pour les actions
 
 
 
