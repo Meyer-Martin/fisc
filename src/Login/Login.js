@@ -42,8 +42,7 @@ function Login() {
         createUserWithEmailAndPassword(auth, email, password)
             .then(async (userCredential) => {
                 const user = userCredential.user;
-                const userId = user.uid;
-                addRoles(userId);
+                storeEmailAndRole(user);
                 await updateProfile(user, {
                     displayName: name,
                 });
@@ -136,8 +135,7 @@ function signInWithGoogle(navigate) {
     signInWithPopup(auth, provider)
         .then((result) => {
             const user = result.user;
-            const userId = user.uid;
-            addRoles(userId);
+            storeEmailAndRole(user);
 
             if (user) {
                 redirectToDashboard(navigate);
@@ -153,8 +151,7 @@ function signInWithGithub(navigate) {
     signInWithPopup(auth, provider)
         .then((result) => {
             const user = result.user;
-            const userId = user.uid;
-            addRoles(userId);
+            storeEmailAndRole(user);
             if (user) {
                 redirectToDashboard(navigate);
             }
@@ -168,10 +165,12 @@ function redirectToDashboard(navigate) {
     navigate('/dashboard');
 }
 
-function addRoles(userId) {
-    const userRef = doc(db, "users", userId);
+function storeEmailAndRole(user) {
+    const userRef = doc(db, "users", user.uid);
     setDoc(userRef, {
-        role: "USER"
+        role: "USER",
+        email: user.email,
+        dateCreationAccount: new Date()
     });
 }
 
