@@ -98,7 +98,7 @@ function Admin() {
                 userId: doc.id,
                 email: doc.data().email,
                 dateCreationAccount: convertDate(doc.data().dateCreationAccount),
-                dateLastConnection: 'zdazdzad',
+                dateLastConnection: convertDate(doc.data().lastConnection),
                 action: <div>
                     <Button appearance="link" onClick={() => sendPasswordReset(doc.data().email)}>
                         <FontAwesomeIcon icon={faEnvelope} />
@@ -121,6 +121,7 @@ function Admin() {
 function convertDate(date) {
     return date.toDate().toLocaleDateString();
 }
+
 
 function sendPasswordReset(email) {
     sendPasswordResetEmail(auth, email)

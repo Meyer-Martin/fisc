@@ -12,7 +12,7 @@ import { auth, db } from '../firebase/firebaseConfig';
 import "rsuite/dist/rsuite.min.css";
 import "./Login.css";
 import { useNavigate } from 'react-router-dom';
-import { doc, setDoc } from "firebase/firestore";
+import {doc, setDoc, updateDoc} from "firebase/firestore";
 
 function Login() {
     const [email, setEmail] = useState("martin@gmail.com");
@@ -28,6 +28,7 @@ function Login() {
             .then((userCredential) => {
                 const user = userCredential.user;
                 if (user) {
+                    updateLastConnection(user);
                     redirectToDashboard(navigate);
                 }
             })
@@ -138,6 +139,7 @@ function signInWithGoogle(navigate) {
             storeEmailAndRole(user);
 
             if (user) {
+                updateLastConnection(user);
                 redirectToDashboard(navigate);
             }
         })
@@ -153,6 +155,7 @@ function signInWithGithub(navigate) {
             const user = result.user;
             storeEmailAndRole(user);
             if (user) {
+                updateLastConnection(user);
                 redirectToDashboard(navigate);
             }
         })
@@ -188,6 +191,13 @@ function convertErrorMessage(errorMessage) {
         default:
             return errorMessage;
     }
+}
+
+function updateLastConnection(user) {
+    const userRef = doc(db, "users", user.uid);
+    updateDoc(userRef, {
+        lastConnection: new Date()
+    });
 }
 
 export { Login };
