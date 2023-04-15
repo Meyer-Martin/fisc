@@ -61,5 +61,4 @@ function redirectToLogin(navigate) {
 }
 
 
-
 export {Navbar}
