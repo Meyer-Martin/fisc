@@ -6,6 +6,7 @@ import {collection, query, getDocs, doc, getDoc, updateDoc  } from "firebase/fir
 import {db, auth} from "../firebase/firebaseConfig";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import {useNavigate} from "react-router-dom";
 
 
 const {Column, HeaderCell, Cell} = Table;
@@ -14,7 +15,8 @@ const CompactCell = props => <Cell {...props} style={{padding: 4}}/>;
 const CompactHeaderCell = props => <HeaderCell {...props} style={{padding: 4}}/>;
 
 function Admin() {
-
+    const navigate = useNavigate();
+    checkAdmin(navigate);
     const defaultColumns = [
         {
             key: 'email',
@@ -168,6 +170,27 @@ async function removeUser(userId) {
         // doc.data() will be undefined in this case
         console.log("No such document!");
     }
+}
+
+async function checkAdmin(navigate) {
+    const uid = localStorage.getItem('uid');
+    const docRef = doc(db, "users", uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const role = docSnap.data().role;
+        if (role !== 'ADMIN') {
+            return redirectToHome(navigate);
+
+        }
+    } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+    }
+}
+
+function redirectToHome(navigate) {
+    navigate('/dashboard');
 }
 
 export {Admin};
