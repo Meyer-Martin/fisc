@@ -28,6 +28,7 @@ function Login() {
             .then((userCredential) => {
                 const user = userCredential.user;
                 if (user) {
+                    storeUidLocalStorage(user);
                     updateLastConnection(user);
                     redirectToDashboard(navigate);
                 }
@@ -49,6 +50,8 @@ function Login() {
                 });
 
                 if (user) {
+                    storeUidLocalStorage(user);
+                    updateLastConnection(user);
                     redirectToDashboard(navigate);
                 }
             })
@@ -139,6 +142,7 @@ function signInWithGoogle(navigate) {
             storeEmailAndRole(user);
 
             if (user) {
+                storeUidLocalStorage(user);
                 updateLastConnection(user);
                 redirectToDashboard(navigate);
             }
@@ -155,6 +159,7 @@ function signInWithGithub(navigate) {
             const user = result.user;
             storeEmailAndRole(user);
             if (user) {
+                storeUidLocalStorage(user);
                 updateLastConnection(user);
                 redirectToDashboard(navigate);
             }
@@ -200,4 +205,7 @@ function updateLastConnection(user) {
     });
 }
 
+function storeUidLocalStorage(user) {
+    localStorage.setItem('uid', user.uid);
+}
 export { Login };
