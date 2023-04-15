@@ -48,6 +48,7 @@ function disconnect(navigate) {
     const auth = getAuth();
     signOut(auth)
         .then(() => {
+            localStorage.removeItem('uid');
             redirectToLogin(navigate);
         })
         .catch((error) => {
