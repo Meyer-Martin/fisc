@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { sendPasswordResetEmail  } from "firebase/auth";
 import {Navbar} from "../Navbar/Navbar";
 import {Table, Button} from 'rsuite';
@@ -7,6 +7,7 @@ import {db, auth} from "../firebase/firebaseConfig";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import {useNavigate} from "react-router-dom";
+import Swal from "sweetalert2";
 
 
 const {Column, HeaderCell, Cell} = Table;
@@ -57,8 +58,9 @@ function Admin() {
     const CustomCell = compact ? CompactCell : Cell;
     const CustomHeaderCell = compact ? CompactHeaderCell : HeaderCell;
 
-    getData();
-
+    useEffect(() => {
+        getData();
+    }, []);
 
     return (
         <div>
@@ -128,11 +130,20 @@ function convertDate(date) {
 function sendPasswordReset(email) {
     sendPasswordResetEmail(auth, email)
         .then(() => {
-            console.log('email sent')
-            console.log(email)
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Mail envoyé !',
+                showConfirmButton: false,
+                timer: 1000
+            })
         })
         .catch((error) => {
-            console.error(error)
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Une erreur est survenue \n' + error,
+            })
         });
 }
 
