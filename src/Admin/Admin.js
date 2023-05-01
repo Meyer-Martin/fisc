@@ -101,6 +101,112 @@ function Admin() {
         });
         setData(users);
     }
+
+    async function toggleRole(userId) {
+        // Get role from userId
+        const docRef = doc(db, "users", userId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const role = docSnap.data().role;
+            if (role === 'ADMIN') {
+                updateDoc(docRef, {
+                    role: 'USER'
+                })
+                    .then(() => {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Droits retirés !',
+                            showConfirmButton: false,
+                            timer: 1000
+                        })
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error', title: 'Oops...', text: 'Une erreur est survenue \n' + error,
+                        })
+                    });
+            } else if (role === 'USER') {
+                updateDoc(docRef, {
+                    role: 'ADMIN'
+                })
+                    .then(() => {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Droits donnés !',
+                            showConfirmButton: false,
+                            timer: 1000
+                        })
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error', title: 'Oops...', text: 'Une erreur est survenue \n' + error,
+                        })
+                    });
+            }
+
+            getData();
+        } else {
+            Swal.fire({
+                icon: 'error', title: 'Oops...', text: 'Une erreur est survenue',
+            })
+        }
+    }
+
+
+    async function toggleUser(userId) {
+        const docRef = doc(db, "users", userId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const status = docSnap.data().status;
+            if (status) {
+                updateDoc(docRef, {
+                    status: false
+                })
+                    .then(() => {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Compte désactivé !',
+                            showConfirmButton: false,
+                            timer: 1000
+                        })
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error', title: 'Oops...', text: 'Une erreur est survenue \n' + error,
+                        })
+                    });
+            } else {
+                updateDoc(docRef, {
+                    status: true
+                })
+                    .then(() => {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Compte activé !',
+                            showConfirmButton: false,
+                            timer: 1000
+                        })
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error', title: 'Oops...', text: 'Une erreur est survenue \n' + error,
+                        })
+                    });
+            }
+
+            getData();
+        } else {
+            Swal.fire({
+                icon: 'error', title: 'Oops...', text: 'Une erreur est survenue',
+            })
+        }
+    }
 }
 
 function convertDate(date) {
@@ -133,8 +239,9 @@ async function checkAdmin(navigate) {
             return redirectToHome(navigate);
         }
     } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
+        Swal.fire({
+            icon: 'error', title: 'Oops...', text: 'Une erreur est survenue',
+        })
     }
 }
 

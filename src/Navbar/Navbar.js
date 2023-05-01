@@ -21,8 +21,6 @@ function Navbar() {
             if (docSnap.exists()) {
                 const user = docSnap.data();
                 setUser(user);
-            } else {
-                console.log('Aucun document correspondant !');
             }
         }
         fetchData();
