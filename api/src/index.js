@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import ip from 'ip';
 import cors from 'cors';
 
-import routesTemplate from './routes/template.routes.js';
+import routesServer from './routes/server.routes.js';
 
 import logger from './util/logger.js';
 dotenv.config();
@@ -14,6 +14,6 @@ app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 //Template
-app.use('/template', routesTemplate);
+app.use('/server', routesServer);
 
 app.listen(PORT, () => logger.info(`Server running on: ${ip.address()}:${PORT}`));

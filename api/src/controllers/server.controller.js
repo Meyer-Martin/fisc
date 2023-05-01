@@ -3,8 +3,6 @@ import logger from '../util/logger.js';
 import serverCreateSchema from '../models/server.model.js';
 import { spawn } from 'child_process';
 
-import config from './config.js';
-
 const HttpStatus = {
   OK: { code: 200, status: 'OK' },
   CREATED: { code: 201, status: 'CREATED' },
@@ -24,7 +22,7 @@ function createScalewayServers(serverCount, imageId) {
   return new Promise((resolve, reject) => {
     try {
       const cmd = spawn('terraform', ['apply', '-var', `server_count=${serverCount}, '-var', image_id=${imageId}`], {
-        cwd: '/path/to/terraform/directory' // mettre le path du packer
+        cwd: '../../terraform/main.tf' // mettre le path du packer
       });
       resolve()
     } catch(err) {
@@ -33,7 +31,7 @@ function createScalewayServers(serverCount, imageId) {
   });
 }
 
-export const createTemplate = async (req, res) => {
+export const createServer = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, creating template`);
    // validation du corps de la requête pour voir si ça match avec le modèle de données
    const {error} = serverCreateSchema.validate(req.body);
@@ -48,22 +46,22 @@ export const createTemplate = async (req, res) => {
   res.status(HttpStatus.OK.code).send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Template OK`));
 };
 
-export const getTemplates = async (req, res) =>  {
+export const getServers = async (req, res) =>  {
   logger.info(`${req.method} ${req.originalUrl}, fetching template`); 
   res.status(HttpStatus.OK.code).send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Template OK`));
 };
 
-export const getTemplate = async (req, res) => {
+export const getServer = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching template`);
   res.status(HttpStatus.OK.code).send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Template OK`));
 };
 
-export const updateTemplate = async (req, res) => {
+export const updateServer = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching template`);
   res.status(HttpStatus.OK.code).send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Template OK`));
 };
 
-export const deleteTemplate = async(req, res) => {
+export const deleteServer = async(req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting template`);
   res.status(HttpStatus.OK.code).send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Template OK`));
 };

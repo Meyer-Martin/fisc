@@ -3,6 +3,6 @@ module.exports = {
   scaleway: {
     organization: "Toulouse Ynov Campus",
     token: "SCWE8HXA5XQ3RRQWRDSQ",
-    region: "fr-par"
+    region: "fr-par2"
   }
 };
