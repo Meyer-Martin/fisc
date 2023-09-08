@@ -1,0 +1,39 @@
+services:
+  database:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ../db/initdb:/var/lib/mysql
+      - ../db/initdb.sql:/docker-entrypoint-initdb.d/0_init.sql
+    environment:
+      MYSQL_DATABASE: fisc_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: letmein
+      MYSQL_ROOT_PASSWORD: letmein
+      SERVICE_TAGS: prod
+      SERVICE_NAME: database
+    networks:
+      - network
+  api:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./app:/usr/app/app
+    ports:
+      - 3000:3000
+    environment:
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_USER: 'admin'
+      DB_PASSWORD: 'letmein'
+      DB_NAME: fisc_db
+      DB_CONNECTION_LIMIT: 20
+      SERVER_PORT: 3000
+    depends_on:
+      - database
+    networks:
+      - network
+
+networks:
+  network:
