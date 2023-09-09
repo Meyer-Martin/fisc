@@ -11,7 +11,7 @@ class ResponseFormat {
     this.statusCode = statusCode;
     this.httpStatus = httpStatus;
     this.message = message;
-    this.data = data;
+    data ? this.data = data : null;
   }
 }
   

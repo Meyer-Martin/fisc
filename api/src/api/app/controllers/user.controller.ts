@@ -43,15 +43,9 @@ export const createUser = async (req: Request, res: Response) => {
   }
   try {
     const data = setData(req);
-    database.query(QUERY.CREATE_USER, Object.values(data), (err: any) => {
-      if(err) {
-        logger.info(err)
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-      }
-      res.status(HttpStatus.CREATED.code)
-        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User created`));
-    });
+    await database.query(QUERY.CREATE_USER, Object.values(data))
+    res.status(HttpStatus.CREATED.code)
+      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User created`));
   } catch (err) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -60,43 +54,42 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const getUsers = async (req : Request, res: Response) =>  {
   logger.info(`${req.method} ${req.originalUrl}, fetching users`);
-  database.query(QUERY.SELECT_USERS, (err: any, result: Array<User>) => {
-    if (err) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-    }
-    if(result.length === 0) {
+  try {
+    const result = await database.query(QUERY.SELECT_USERS)
+    if(!result) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by id ${req.params.id} was not found`));
     }
-
-    const users = result.map((row) => ({
+    const users = result.map((row: any) => ({
       name: row.name,
       forename: row.forename,
       email: row.email,
       password: row.password,
     }));
 
-    return res.status(HttpStatus.OK.code)
+    res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Users retrieved`, { users: users }));
-  });
+
+  } catch(err) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+        .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+  }
 };
 
 export const getUser = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching user`);
-  database.query(QUERY.SELECT_USER, req.params.id, (err: any, result: User) => {
+  try {
+    const result = await database.query(QUERY.SELECT_USER, req.params.id)
     if(!result) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by id ${req.params.id} was not found`));
     }
-    if (err) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-    }
-
-    return res.status(HttpStatus.OK.code)
+    res.status(HttpStatus.OK.code)
     .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User retrieved`, { result }));
-  });  
+  } catch(err) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+        .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+  } 
 };
 
 export const updateUser = async (req: Request, res: Response) => {
@@ -106,44 +99,36 @@ export const updateUser = async (req: Request, res: Response) => {
     return res.status(HttpStatus.BAD_REQUEST.code)
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
- 
-  database.query(QUERY.SELECT_USER, req.params.id, (err: any, selectResult: User) => {
+  try {
+    const selectResult = await database.query(QUERY.SELECT_USER, req.params.id)
     if(!selectResult) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by id ${req.params.id} was not found`));
     }
-    if(err) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-    }
-
-    const data = setUpdateData(req, selectResult);
-    database.query(QUERY.UPDATE_USER, Object.values(data), (err2: any) => {
-      if(err2) {
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-      }
-      res.status(HttpStatus.OK.code)
+    const data = setUpdateData(req, selectResult[0] as User);
+    await database.query(QUERY.UPDATE_USER, Object.values(data))
+    res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User updated`));
-    });
-  });
-
+  } catch(err) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+        .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+  }
 };
 
 export const deleteUser = async(req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting user`);
-  database.query(QUERY.DELETE_USER, req.params.id, (err: any, result: User) => {
+  try {
+    const result = await database.query(QUERY.DELETE_USER, req.params.id)
     if(!result) {
       return res.status(HttpStatus.NOT_FOUND.code)
-      .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by id ${req.params.id} was not found`));
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by id ${req.params.id} was not found`));
     }
-    if(err) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-    .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-    }
-    return res.status(HttpStatus.OK.code)
+    res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User deleted`));
-  });
+  } catch(err) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+        .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+  }
 };
 
 export default HttpStatus;

@@ -1,9 +1,9 @@
-import mysql from 'mysql2/promise';
+import * as mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const pool: mysql2.Pool = mysql.createPool({
+const pool = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
   port: Number(process.env.DB_PORT) || 8306,
   user: process.env.DB_USER || 'admin',
@@ -12,4 +12,4 @@ const pool: mysql2.Pool = mysql.createPool({
   connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 20
 });
 
-export default pool.promise();
+export default pool;
