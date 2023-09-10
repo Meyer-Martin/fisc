@@ -1,30 +1,32 @@
 import React, {useEffect, useState} from "react";
-import {getAuth, updateEmail, updatePassword, updateProfile} from "firebase/auth";
 import {Navbar} from "../Navbar/Navbar";
 import "./Account.css"
 import {Button, Input} from 'rsuite';
+import axios from 'axios';
+
 
 function Account() {
-    const [userData, setUserData] = useState({});
-    const [displayName, setDisplayName] = useState("");
+    const [id, setId] = useState("");
+    const [name, setName] = useState("");
+    const [forename, setForename] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showForm, setShowForm] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        if (user !== null) {
-            setUserData({
-                displayName: user.displayName,
-                email: user.email,
-                photoURL: user.photoURL,
-                emailVerified: user.emailVerified,
-                uid: user.uid,
+        axios.get('http://localhost:3000/user', {
+            headers: {
+                "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEuY0BnbWFpbC5jb20iLCJpYXQiOjE2OTQzNjI5MzEsImV4cCI6MTY5NDM3MzczMX0.ZWWH6gNYu_k_kBQ6v5LC2gZySEQknihAR3n7a4mecvg"
+            },
+            email, password
+        })
+            .then((res) => {
+                const userLogged = res.data.data.users.find((user) => email === user.email);
+                localStorage.setItem('user', JSON.stringify(userLogged));
+            })
+            .catch(() => {
             });
-            setDisplayName(user.displayName);
-            setEmail(user.email);
-        }
     }, []);
 
     const handleUpdateDisplayName = async (e) => {
@@ -32,9 +34,9 @@ function Account() {
         try {
             const auth = getAuth();
             const user = auth.currentUser;
-            await updateProfile(user, {displayName});
-            setUserData({...userData, displayName});
-            setDisplayName("");
+            await updateProfile(user, {displayName: name});
+            setUserData({...userData, displayName: name});
+            setName("");
         } catch (error) {
             console.log(error);
         }
@@ -70,27 +72,28 @@ function Account() {
             <Navbar/>
             <div className="account-page">
 
-                {userData.uid !== undefined && (
+                {id !== undefined && (
                     <>
                         <div className="user-info">
-                            <div className="displayName"> Nom d'affichage: {userData.displayName}</div>
-                            <div className="userData">Email: {userData.email}</div>
-                            <div className="emailVerified">Email vérifié: {userData.emailVerified ? "Oui" : "Non"}</div>
+                            <div className="displayName"> Nom : { name } { forename }</div>
+                            <div className="userData">Email: {email}</div>
                         </div>
                         <div className="user-actions">
                             <button onClick={() => setShowForm(!showForm)}>Modifier</button>
                         </div>
                         {showForm && (
-                            <form className="update-form" onSubmit={(e) => {
-                                handleUpdateDisplayName(e);
-                                handleUpdateEmail(e);
-                                handleUpdatePassword(e);
+                            <form className="update-form" onSubmit={() => {
                                 setShowForm(false);
                             }}>
                                 <div className="form-group">
-                                    <label>Nom d'affichage:</label>
-                                    <Input type="text" value={displayName}
-                                           onChange={(e) => setDisplayName(e)}/>
+                                    <label>Prénom :</label>
+                                    <Input type="text" value={name}
+                                           onChange={(e) => setName(e)}/>
+                                </div>
+                                <div className="form-group">
+                                    <label>Nom de famille :</label>
+                                    <Input type="text" value={forename}
+                                           onChange={(e) => setForename(e)}/>
                                 </div>
                                 <div className="form-group">
                                     <label>Email:</label>
@@ -101,7 +104,8 @@ function Account() {
                                     <Input type="password" value={password}
                                            onChange={(e) => setPassword(e)}/>
                                 </div>
-                                <Button type="submit">Enregistrer les modifications</Button>
+                                <Button type="button" onClick={updateUser}>Enregistrer les modifications</Button>
+                                {error && <p className="error-message">{error}</p>}
                             </form>
                         )}
                     </>
