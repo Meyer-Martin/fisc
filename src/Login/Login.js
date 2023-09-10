@@ -1,63 +1,49 @@
 import "firebase/auth";
-import {
-    GithubAuthProvider,
-    GoogleAuthProvider,
-    signInWithEmailAndPassword,
-    signInWithPopup,
-    createUserWithEmailAndPassword,
-    updateProfile
-} from "firebase/auth";
 import {useEffect, useRef, useState} from 'react';
-import { auth, db } from '../firebase/firebaseConfig';
 import "rsuite/dist/rsuite.min.css";
 import "./Login.css";
-import { useNavigate } from 'react-router-dom';
-import {doc, setDoc, updateDoc} from "firebase/firestore";
+import {useNavigate} from 'react-router-dom';
+import axios from 'axios';
 
 function Login() {
-    const [email, setEmail] = useState("martin@gmail.com");
     const [name, setName] = useState("Martin");
-    const [password, setPassword] = useState("test123");
+    const [forename, setForename] = useState("Meyer de 5ème6");
+    const [email, setEmail] = useState("a.c@gmail.com");
+    const [password, setPassword] = useState("azerty");
     const [error, setError] = useState(null);
 
     const navigate = useNavigate();
 
     const handleLogin = (e) => {
         e.preventDefault();
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                if (user) {
-                    storeUidLocalStorage(user);
-                    updateLastConnection(user);
-                    redirectToDashboard(navigate);
-                }
+        axios.get('http://localhost:3000/user', {
+            headers: {
+                "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEuY0BnbWFpbC5jb20iLCJpYXQiOjE2OTQzNjI5MzEsImV4cCI6MTY5NDM3MzczMX0.ZWWH6gNYu_k_kBQ6v5LC2gZySEQknihAR3n7a4mecvg"
+            },
+            email, password
+        })
+            .then((res) => {
+               const userLogged = res.data.data.users.find((user) => email === user.email);
+               localStorage.setItem('user', JSON.stringify(userLogged));
+                redirectToDashboard(navigate);
             })
-            .catch((error) => {
-                const errorMessage = error.message;
-                setError(errorMessage);
+            .catch(() => {
+                setError('Une erreur s\'est produite');
             });
     };
 
     const handleSignUp = (e) => {
         e.preventDefault();
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(async (userCredential) => {
-                const user = userCredential.user;
-                storeEmailAndRole(user);
-                await updateProfile(user, {
-                    displayName: name,
-                });
-
-                if (user) {
-                    storeUidLocalStorage(user);
-                    updateLastConnection(user);
-                    redirectToDashboard(navigate);
-                }
+        axios.post('http://localhost:3000/user', {
+            name, forename, email, password
+        })
+            .then(() => {
+                const userLogged = {  name, forename, email, password };
+                localStorage.setItem('user', JSON.stringify(userLogged));
+                redirectToDashboard(navigate);
             })
-            .catch((error) => {
-                const errorMessage = error.message;
-                setError(errorMessage);
+            .catch(() => {
+                setError('Une erreur s\'est produite');
             });
     };
 
@@ -109,10 +95,11 @@ function Login() {
                     <h2 ref={signupBtn} className="form-title" id="signup"><span>or</span>Sign up</h2>
                     <div className="form-holder">
                         <input type="text" className="input" value={name} onChange={e => setName(e.target.value)}/>
+                        <input type="text" className="input" value={forename} onChange={e => setForename(e.target.value)}/>
                         <input type="text" className="input" value={email} onChange={e => setEmail(e.target.value)}/>
                         <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)}/>
                     </div>
-                    {error && <p className="error-message">{convertErrorMessage(error)}</p>}
+                    {error && <p className="error-message">{error}</p>}
                     <button onClick={handleSignUp} className="submit-btn">Sign up</button>
                 </div>
                 <div className="login slide-up">
@@ -122,10 +109,8 @@ function Login() {
                             <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)}/>
                             <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} />
                         </div>
-                        {error && <p className="error-message">{convertErrorMessage(error)}</p>}
+                        {error && <p className="error-message">{error}</p>}
                         <button onClick={handleLogin} className="submit-btn">Log in</button>
-                        <button onClick={() => signInWithGoogle(navigate)} className="submit-btn">Connexion avec Google</button>
-                        <button onClick={() => signInWithGithub(navigate)} className="submit-btn">Connexion avec Github</button>
                     </div>
                 </div>
             </div>
@@ -133,79 +118,8 @@ function Login() {
     );
 }
 
-function signInWithGoogle(navigate) {
-    const provider = new GoogleAuthProvider();
-
-    signInWithPopup(auth, provider)
-        .then((result) => {
-            const user = result.user;
-            storeEmailAndRole(user);
-
-            if (user) {
-                storeUidLocalStorage(user);
-                updateLastConnection(user);
-                redirectToDashboard(navigate);
-            }
-        })
-        .catch((error) => {
-            convertErrorMessage(error);
-        });
-}
-function signInWithGithub(navigate) {
-    const provider = new GithubAuthProvider();
-
-    signInWithPopup(auth, provider)
-        .then((result) => {
-            const user = result.user;
-            storeEmailAndRole(user);
-            if (user) {
-                storeUidLocalStorage(user);
-                updateLastConnection(user);
-                redirectToDashboard(navigate);
-            }
-        })
-        .catch((error) => {
-            convertErrorMessage(error);
-        });
-}
-
 function redirectToDashboard(navigate) {
     navigate('/dashboard');
 }
 
-function storeEmailAndRole(user) {
-    const userRef = doc(db, "users", user.uid);
-    setDoc(userRef, {
-        role: "USER",
-        email: user.email,
-        dateCreationAccount: new Date(),
-        status: true
-    });
-}
-
-function convertErrorMessage(errorMessage) {
-    switch (errorMessage) {
-        case 'Firebase: Error (auth/user-not-found).':
-            return 'Cet utilisateur n\'existe pas';
-        case 'Firebase: Error (auth/wrong-password).':
-            return 'Email ou mot de passe incorrect';
-        case 'Firebase: Error (auth/email-already-in-use).':
-            return "L'email est déjà utilisé par un autre compte";
-        case 'Firebase: Error (auth/weak-password).':
-            return 'Le mot de passe doit avoir au moins 6 caractères';
-        default:
-            return errorMessage;
-    }
-}
-
-function updateLastConnection(user) {
-    const userRef = doc(db, "users", user.uid);
-    updateDoc(userRef, {
-        lastConnection: new Date()
-    });
-}
-
-function storeUidLocalStorage(user) {
-    localStorage.setItem('uid', user.uid);
-}
 export { Login };
