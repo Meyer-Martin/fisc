@@ -13,4 +13,4 @@ const start = (port: number) => {
     }
 };
 
-start(process.env.PORT_API);
+start(Number(process.env.PORT_API)!);

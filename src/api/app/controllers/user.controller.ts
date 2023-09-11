@@ -51,7 +51,7 @@ export const createUser = async (req: Request, res: Response) => {
   }
   try {
     const data = setData(req);
-    const secretKey = process.env.SECRET_KEY
+    const secretKey = process.env.SECRET_KEY!
     logger.info(secretKey)
     if(data.email && data.password) {
       //await storePassword(data.email, data.password); COMMENTE BONUX MAITE
@@ -119,8 +119,9 @@ export const login = async (req: Request, res: Response) => {
     const user = rows.map((row : User) => ({
       password : row.password
     }));
-    const secretKey = process.env.SECRET_KEY
-    if (req.body.password == user.password) {
+    const secretKey = process.env.SECRET_KEY!
+    logger.info(user)
+    if (req.body.password == user[0].password!) {
       // Générez un token JWT
       const token = jwt.sign(req.body.email , secretKey);
 
