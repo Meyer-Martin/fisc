@@ -15,57 +15,38 @@ function Account() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        axios.get('http://localhost:3000/user', {
-            headers: {
-                "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEuY0BnbWFpbC5jb20iLCJpYXQiOjE2OTQzNjI5MzEsImV4cCI6MTY5NDM3MzczMX0.ZWWH6gNYu_k_kBQ6v5LC2gZySEQknihAR3n7a4mecvg"
-            },
-            email, password
-        })
-            .then((res) => {
-                const userLogged = res.data.data.users.find((user) => email === user.email);
-                localStorage.setItem('user', JSON.stringify(userLogged));
-            })
-            .catch(() => {
-            });
+        const user =  JSON.parse(localStorage.getItem('user'));
+        setId(user.id);
+        setName(user.name);
+        setForename(user.forename);
+        setEmail(user.email);
+        setPassword(user.password);
     }, []);
 
-    const handleUpdateDisplayName = async (e) => {
-        e.preventDefault();
-        try {
-            const auth = getAuth();
-            const user = auth.currentUser;
-            await updateProfile(user, {displayName: name});
-            setUserData({...userData, displayName: name});
-            setName("");
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    function updateUser() {
+        const headers = {
+            "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF6ZXJ0LmF6ZXJjQGdtYWlsLmNvbSIsImlhdCI6MTY5NDQzMzk5NywiZXhwIjoxNjk0NDQ0Nzk3fQ.bLb-8llqFb_sFyrtVe4V1uOQZ3TF_gHJFmMmdhfIiRM"
+        };
 
-    const handleUpdateEmail = async (e) => {
-        e.preventDefault();
-        try {
-            const auth = getAuth();
-            const user = auth.currentUser;
-            await updateEmail(user, email);
-            setUserData({...userData, email});
-            setEmail("");
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const handleUpdatePassword = async (e) => {
-        e.preventDefault();
-        try {
-            const auth = getAuth();
-            const user = auth.currentUser;
-            await updatePassword(user, password);
-            setPassword("");
-        } catch (error) {
-            console.log(error);
-        }
-    };
+        axios.put(`http://localhost:3000/user/${id}`, {
+            name, forename, email, password
+        }, {
+            headers: headers
+        })
+            .then((res) => {
+                console.log(res);
+                const updatedUser = { name, forename, email, password };
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+                setName(name);
+                setForename(forename);
+                setEmail(email);
+                setPassword(password);
+            })
+            .catch((error) => {
+                console.error(error);
+                setError('Une erreur s\'est produite');
+            });
+    }
 
     return (
         <div>

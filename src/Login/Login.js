@@ -18,14 +18,14 @@ function Login() {
         e.preventDefault();
         axios.post('http://localhost:3000/user/login', {
             headers: {
-                "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEuY0BnbWFpbC5jb20iLCJpYXQiOjE2OTQzNjI5MzEsImV4cCI6MTY5NDM3MzczMX0.ZWWH6gNYu_k_kBQ6v5LC2gZySEQknihAR3n7a4mecvg"
+                "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF6ZXJ0LmF6ZXJjQGdtYWlsLmNvbSIsImlhdCI6MTY5NDQzMzk5NywiZXhwIjoxNjk0NDQ0Nzk3fQ.bLb-8llqFb_sFyrtVe4V1uOQZ3TF_gHJFmMmdhfIiRM"
             },
             email, password
         })
             .then(() => {
                 axios.get('http://localhost:3000/user', {
                     headers: {
-                        "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEuY0BnbWFpbC5jb20iLCJpYXQiOjE2OTQzNjI5MzEsImV4cCI6MTY5NDM3MzczMX0.ZWWH6gNYu_k_kBQ6v5LC2gZySEQknihAR3n7a4mecvg"
+                        "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF6ZXJ0LmF6ZXJjQGdtYWlsLmNvbSIsImlhdCI6MTY5NDQzMzk5NywiZXhwIjoxNjk0NDQ0Nzk3fQ.bLb-8llqFb_sFyrtVe4V1uOQZ3TF_gHJFmMmdhfIiRM"
                     }
                 })
                     .then((users) => {
