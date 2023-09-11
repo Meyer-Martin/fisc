@@ -15,18 +15,24 @@ function Account() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        const user =  JSON.parse(localStorage.getItem('user'));
-        setId(user.id);
-        setName(user.name);
-        setForename(user.forename);
-        setEmail(user.email);
-        setPassword(user.password);
+        const id = localStorage.getItem('id');
+
+        axios.get(`${url}/user/${id}`, {
+            headers: headers
+        })
+            .then((res) => {
+                const user = res.data.data.user[0];
+                setId(user.id);
+                setName(user.name);
+                setForename(user.forename);
+                setEmail(user.email);
+                setPassword(user.password);
+            });
     }, []);
 
     function updateUser() {
-        const headers = {
-            "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF6ZXJ0LmF6ZXJjQGdtYWlsLmNvbSIsImlhdCI6MTY5NDQzMzk5NywiZXhwIjoxNjk0NDQ0Nzk3fQ.bLb-8llqFb_sFyrtVe4V1uOQZ3TF_gHJFmMmdhfIiRM"
-        };
+        const id = localStorage.getItem('id');
+
 
         axios.put(`http://localhost:3000/user/${id}`, {
             name, forename, email, password

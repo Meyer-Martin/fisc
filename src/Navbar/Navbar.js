@@ -2,11 +2,9 @@ import '../Navbar/Navbar.css';
 import {Logo} from '../img/Logo';
 import {Button,} from 'rsuite';
 import {Link, useNavigate} from "react-router-dom";
-import "firebase/auth";
-import {getAuth, signOut} from "firebase/auth";
 import {useEffect, useState} from "react";
-import {doc, getDoc} from "firebase/firestore";
-import {db} from "../firebase/firebaseConfig";
+import {headers, url} from "../environment";
+import axios from 'axios';
 
 
 function Navbar() {

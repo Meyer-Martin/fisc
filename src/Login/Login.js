@@ -16,26 +16,13 @@ function Login() {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:3000/user/login', {
-            headers: {
-                "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF6ZXJ0LmF6ZXJjQGdtYWlsLmNvbSIsImlhdCI6MTY5NDQzMzk5NywiZXhwIjoxNjk0NDQ0Nzk3fQ.bLb-8llqFb_sFyrtVe4V1uOQZ3TF_gHJFmMmdhfIiRM"
-            },
+        axios.post(`${url}/user/login`, {
             email, password
         })
-            .then(() => {
-                axios.get('http://localhost:3000/user', {
-                    headers: {
-                        "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF6ZXJ0LmF6ZXJjQGdtYWlsLmNvbSIsImlhdCI6MTY5NDQzMzk5NywiZXhwIjoxNjk0NDQ0Nzk3fQ.bLb-8llqFb_sFyrtVe4V1uOQZ3TF_gHJFmMmdhfIiRM"
-                    }
-                })
-                    .then((users) => {
-                        const userLogged = users.data.data.users.find((user) => email === user.email);
-                        localStorage.setItem('user', JSON.stringify(userLogged));
-                        redirectToDashboard(navigate);
-                    })
-                    .catch(() => {
-                        setError('Une erreur s\'est produite');
-                    });
+            .then((res) => {
+               const userLogged = res.data.data.users.find((user) => email === user.email);
+               localStorage.setItem('user', JSON.stringify(userLogged));
+                redirectToDashboard(navigate);
             })
             .catch(() => {
                 setError('Une erreur s\'est produite');
