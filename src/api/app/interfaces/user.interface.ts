@@ -5,7 +5,8 @@ interface User {
     email   ?: string
     password?: string
     isadmin ?: boolean
-    status  ?: boolean
+    status  ?: boolean,
+    creationDate ?: Date
 }
 
 export default User

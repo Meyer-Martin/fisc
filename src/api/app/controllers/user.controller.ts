@@ -22,10 +22,10 @@ function setData(req: Request) {
     name: req.body.name,
     forename: req.body.forename,
     email: req.body.email,
-    password: req.body.password,
-    isadmin: req.body.isadmin,
-    status: req.body.status
+    password: req.body.password
   };
+  req.body.isadmin ? data.isadmin = req.body.isadmin : data.isadmin = false
+  req.body.status ? data.status = req.body.status : data.status = true
   return data;
 }
 
@@ -38,6 +38,7 @@ function setUpdateData(req: Request, previousValues: User) {
   req.body.isadmin ? data.isadmin = req.body.isadmin : data.isadmin = previousValues.isadmin
   req.body.status ? data.status = req.body.status : data.status = previousValues.status
   data.id = previousValues.id
+  data.creationDate = previousValues.creationDate
   return data;
 }
 
@@ -50,7 +51,7 @@ export const createUser = async (req: Request, res: Response) => {
   }
   try {
     const data = setData(req);
-    const secretKey = process.env.SECRET_KEY || "secretkey"
+    const secretKey = process.env.SECRET_KEY
     logger.info(secretKey)
     if(data.email && data.password) {
       //await storePassword(data.email, data.password); COMMENTE BONUX MAITE
@@ -87,7 +88,8 @@ export const getUsers = async (req : Request, res: Response) =>  {
       forename: row.forename,
       email: row.email,
       isadmin: row.isadmin,
-      status: row.status
+      status: row.status,
+      creationDate: row.creationDate
     }));
 
     res.status(HttpStatus.OK.code)
@@ -105,20 +107,34 @@ export const login = async (req: Request, res: Response) => {
   // Récupérez le mot de passe stocké dans Vault pour cet utilisateur
   //const storedPassword = await retrievePassword(email);
 
-  // Vérifiez si le mot de passe correspond
-  //if (password === storedPassword) {
+  logger.info(`${req.method} ${req.originalUrl}, fetching user`);
+  try {
+    const result = await database.query(QUERY.SELECT_USER_BY_EMAIL, req.body.email)
+    const rows : Array<User> = Object.values(result[0]);
 
-  const secretKey = process.env.SECRET_KEY || "secretkey"
-  if (req.body.password == req.body.password) {
-    // Générez un token JWT
-    const token = jwt.sign(req.body.email , secretKey);
+    if(rows.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by email ${req.body.email} was not found`));
+    }
+    const user = rows.map((row : User) => ({
+      password : row.password
+    }));
+    const secretKey = process.env.SECRET_KEY
+    if (req.body.password == user.password) {
+      // Générez un token JWT
+      const token = jwt.sign(req.body.email , secretKey);
 
-    res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Login succes`, { token }));
-  } else {
-    res.status(401)
-      .send(new ResponseFormat(401, "Unauthorized", "Authentication failed"));
-  }
+      res.status(HttpStatus.OK.code)
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Login succes`, { token }));
+    } else {
+      res.status(401)
+        .send(new ResponseFormat(401, "Unauthorized", "Authentication failed"));
+    }
+
+  } catch(err) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+        .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+  } 
 }
 
 export const getUser = async (req: Request, res: Response) => {
@@ -138,7 +154,8 @@ export const getUser = async (req: Request, res: Response) => {
       forename: row.forename,
       email: row.email,
       isadmin: row.isadmin,
-      status: row.status
+      status: row.status,
+      creationDate: row.creationDate
     }));
 
     res.status(HttpStatus.OK.code)

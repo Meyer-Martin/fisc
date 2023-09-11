@@ -1,6 +1,9 @@
 import app from "./index";
 import ip from 'ip';
 import logger from './util/logger';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const start = (port: number) => {
     try {
@@ -10,4 +13,4 @@ const start = (port: number) => {
     }
 };
 
-start(Number(process.env.SERVER_PORT));
+start(process.env.PORT_API);
