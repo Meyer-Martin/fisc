@@ -50,6 +50,14 @@ export const createUser = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
+    const result = await database.query(QUERY.SELECT_USER_BY_EMAIL, req.body.email)
+    const rows : Array<User> = Object.values(result[0]);
+
+    if(rows.length != 0) {
+      return res.status(HttpStatus.BAD_REQUEST.code)
+        .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, `User with email ${req.body.email} already exist`));
+    }
+
     const data = setData(req);
     const secretKey = process.env.SECRET_KEY!
     logger.info(secretKey)
