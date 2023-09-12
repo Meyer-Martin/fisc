@@ -9,17 +9,17 @@ import axios from 'axios';
 
 function Navbar() {
     const navigate = useNavigate();
-    const [user, setUser] = useState({});
+    const [isAdmin, setIsAdmin] = useState({});
     useEffect(() => {
         async function fetchData() {
-            const uid = localStorage.getItem('uid');
-            const docRef = doc(db, 'users', uid);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                const user = docSnap.data();
-                setUser(user);
-            }
+            const id = localStorage.getItem('id');
+            axios.get(`${url}/user/${id}`, {
+                headers: headers
+            })
+                .then((res) => {
+                    const user = res.data.data.user[0];
+                    setIsAdmin(user.isadmin);
+                });
         }
         fetchData();
     }, []);
@@ -28,7 +28,7 @@ function Navbar() {
             <Link to="/dashboard"><Logo/></Link>
             <div className="links">
                 {
-                    user.role === 'ADMIN' ? <Link to="/admin"><Button appearance="default">admin</Button></Link> : null
+                    isAdmin === 1 ? <Link to="/admin"><Button appearance="default">admin</Button></Link> : null
                 }
                 <Link to="/account"><Button className="my-account" appearance="default">Mon compte</Button></Link>
                 <Link to="/">
@@ -41,15 +41,8 @@ function Navbar() {
 }
 
 function disconnect(navigate) {
-    const auth = getAuth();
-    signOut(auth)
-        .then(() => {
-            localStorage.removeItem('uid');
-            redirectToLogin(navigate);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
+    localStorage.clear();
+    redirectToLogin(navigate);
 }
 
 function redirectToLogin(navigate) {

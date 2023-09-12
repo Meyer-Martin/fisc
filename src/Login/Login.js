@@ -4,6 +4,7 @@ import "rsuite/dist/rsuite.min.css";
 import "./Login.css";
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
+import {url} from "../environment";
 
 function Login() {
     const [name, setName] = useState("Martin");
@@ -20,9 +21,18 @@ function Login() {
             email, password
         })
             .then((res) => {
-               const userLogged = res.data.data.users.find((user) => email === user.email);
-               localStorage.setItem('user', JSON.stringify(userLogged));
-                redirectToDashboard(navigate);
+               const token = res.data.data.token;
+                localStorage.setItem('token', token);
+                axios.get(`${url}/user`, {
+                    headers: {
+                        "Authorization": token
+                    }
+                })
+                .then((res) => {
+                    const userLogged = res.data.data.users.find((user) => email === user.email);
+                    localStorage.setItem('id', JSON.stringify(userLogged.id));
+                    redirectToDashboard(navigate);
+                });
             })
             .catch(() => {
                 setError('Une erreur s\'est produite');
@@ -31,12 +41,16 @@ function Login() {
 
     const handleSignUp = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:3000/user', {
-            name, forename, email, password
+        axios.post(`${url}/user`, {
+            name,
+            forename,
+            email,
+            password,
         })
-            .then(() => {
-                const userLogged = {  name, forename, email, password };
-                localStorage.setItem('user', JSON.stringify(userLogged));
+            .then((res) => {
+                const token = res.data.data.token;
+                localStorage.setItem('token', token);
+                localStorage.setItem('id', res.data.data.id);
                 redirectToDashboard(navigate);
             })
             .catch(() => {

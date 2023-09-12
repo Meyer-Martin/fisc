@@ -3,7 +3,7 @@ import {Navbar} from "../Navbar/Navbar";
 import "./Account.css"
 import {Button, Input} from 'rsuite';
 import axios from 'axios';
-
+import {headers, url} from "../environment";
 
 function Account() {
     const [id, setId] = useState("");
@@ -34,7 +34,7 @@ function Account() {
         const id = localStorage.getItem('id');
 
 
-        axios.put(`http://localhost:3000/user/${id}`, {
+        axios.put(`${url}/user/${id}`, {
             name, forename, email, password
         }, {
             headers: headers
