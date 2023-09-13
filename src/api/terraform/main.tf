@@ -10,8 +10,8 @@ terraform {
 provider "scaleway" {
   zone       = "fr-par-2"
   region     = "fr-par"
-  access_key = "SCWD19AN13E8F4MJX8R8"
-  secret_key = "7b3ed065-474d-42b9-a982-906eec716bfa"
+  access_key = "SCWDZK03AAC657F8S8E1"
+  secret_key = "36e44f90-4669-47ec-ae6e-3a39d2c5d139"
 }
 
 variable "project_id" {

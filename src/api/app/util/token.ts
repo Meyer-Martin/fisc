@@ -10,7 +10,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
         return res.status(401)
             .send(new ResponseFormat(401, "Unauthorized", "Unauthorized"));
     }
-    const secretKey = process.env.SECRET_KEY!
+    const secretKey = process.env.SECRET_KEY || "secret_key"
 
     jwt.verify(token, secretKey, (err: any) => {  
         if(err) {

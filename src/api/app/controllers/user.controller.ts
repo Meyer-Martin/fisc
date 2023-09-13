@@ -35,8 +35,8 @@ function setUpdateData(req: Request, previousValues: User) {
   req.body.forename ? data.forename = req.body.forename : data.forename = previousValues.forename
   req.body.email ? data.email = req.body.email : data.email = previousValues.email
   req.body.password ? data.password = req.body.password : data.password = previousValues.password
-  req.body.isadmin ? data.isadmin = req.body.isadmin : data.isadmin = previousValues.isadmin
-  req.body.status ? data.status = req.body.status : data.status = previousValues.status
+  req.body.isadmin != null ? data.isadmin = req.body.isadmin : data.isadmin = previousValues.isadmin
+  req.body.status != null ? data.status = req.body.status : data.status = previousValues.status
   data.id = previousValues.id
   data.creationDate = previousValues.creationDate
   return data;
@@ -59,8 +59,7 @@ export const createUser = async (req: Request, res: Response) => {
     }
 
     const data = setData(req);
-    const secretKey = process.env.SECRET_KEY!
-    logger.info(secretKey)
+    const secretKey = process.env.SECRET_KEY || "secret_key"
     if(data.email && data.password) {
       //await storePassword(data.email, data.password); COMMENTE BONUX MAITE
       const token = jwt.sign({
@@ -127,7 +126,7 @@ export const login = async (req: Request, res: Response) => {
     const user = rows.map((row : User) => ({
       password : row.password
     }));
-    const secretKey = process.env.SECRET_KEY!
+    const secretKey = process.env.SECRET_KEY || "secret_key"
     logger.info(user)
     if (req.body.password == user[0].password!) {
       // Générez un token JWT
@@ -190,8 +189,9 @@ export const updateUser = async (req: Request, res: Response) => {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by id ${req.params.id} was not found`));
     }
-    logger.info(selectResult[0])
+    logger.info(req.body)
     const data = setUpdateData(req, selectResult[0]);
+    logger.info(data)
 
     await database.query(QUERY.UPDATE_USER, Object.values(data))
     res.status(HttpStatus.OK.code)

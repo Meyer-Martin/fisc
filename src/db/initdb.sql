@@ -20,14 +20,6 @@ CREATE TABLE IF NOT EXISTS user (
 CREATE TABLE IF NOT EXISTS server (
     id            INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     serverName    VARCHAR(255) DEFAULT 'nextcloud_server',
-    serverSize    INT DEFAULT 20
-);
-
--- Table userServer
-CREATE TABLE IF NOT EXISTS userServer (
-    id            INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    user_id       INT NOT NULL,
-    server_id     INT NOT NULL,
-    FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY(server_id) REFERENCES server(id) ON DELETE CASCADE
+    serverSize    INT DEFAULT 20,
+    user_id       INT NOT NULL
 );
