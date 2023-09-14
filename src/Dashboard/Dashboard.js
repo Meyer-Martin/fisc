@@ -82,7 +82,7 @@ function Dashboard() {
 
         <Modal open={openModal} onClose={handleCloseModal}>
             <Modal.Header>
-                <Modal.Title>Modal Title</Modal.Title>
+                <Modal.Title>Création de serveur</Modal.Title>
             </Modal.Header>
             <Modal.Body>
             <Form>
@@ -92,7 +92,7 @@ function Dashboard() {
                     <Form.HelpText>Champ requis</Form.HelpText>
                 </Form.Group>
                 <Form.Group controlId="serverSize">
-                    <Form.ControlLabel>Stockage</Form.ControlLabel>
+                    <Form.ControlLabel>Stockage (en Go)</Form.ControlLabel>
                     <Form.Control name="serverSize" type="number"  onChange={(e) => setServerSize(e)} autoComplete="off" />
                     <Form.HelpText>Champ requis</Form.HelpText>
                 </Form.Group>
