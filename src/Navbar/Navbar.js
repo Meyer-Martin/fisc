@@ -6,7 +6,6 @@ import {useEffect, useState} from "react";
 import {headers, url} from "../environment";
 import axios from 'axios';
 
-
 function Navbar() {
     const navigate = useNavigate();
     const [isAdmin, setIsAdmin] = useState({});
