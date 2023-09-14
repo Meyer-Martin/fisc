@@ -5,12 +5,13 @@ import "./Login.css";
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import {url} from "../environment";
+import {displayErrorMessage} from "../utils/swal";
 
 function Login() {
-    const [name, setName] = useState("Martin");
-    const [forename, setForename] = useState("Meyer de 5ème6");
-    const [email, setEmail] = useState("a.c@gmail.com");
-    const [password, setPassword] = useState("azerty");
+    const [name, setName] = useState("");
+    const [forename, setForename] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
 
     const navigate = useNavigate();
@@ -30,8 +31,12 @@ function Login() {
                 })
                 .then((res) => {
                     const userLogged = res.data.data.users.find((user) => email === user.email);
-                    localStorage.setItem('id', JSON.stringify(userLogged.id));
-                    redirectToDashboard(navigate);
+                    if (!userLogged.status) {
+                        displayErrorMessage('Ce compte a été désactivé', 'Compte désactivé');
+                    } else {
+                        localStorage.setItem('id', JSON.stringify(userLogged.id));
+                        redirectToDashboard(navigate);
+                    }
                 });
             })
             .catch(() => {
