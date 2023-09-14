@@ -46,6 +46,8 @@ function Login() {
             forename,
             email,
             password,
+            isadmin: false,
+            status: true
         })
             .then((res) => {
                 const token = res.data.data.token;

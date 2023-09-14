@@ -4,6 +4,7 @@ import "./Account.css"
 import {Button, Input} from 'rsuite';
 import axios from 'axios';
 import {headers, url} from "../environment";
+import {displayErrorMessage, displaySuccessMessage} from "../utils/swal";
 
 function Account() {
     const [id, setId] = useState("");
@@ -39,8 +40,8 @@ function Account() {
         }, {
             headers: headers
         })
-            .then((res) => {
-                console.log(res);
+            .then(() => {
+                displaySuccessMessage('Votre compte a bien été mis à jour');
                 const updatedUser = { name, forename, email, password };
                 localStorage.setItem('user', JSON.stringify(updatedUser));
                 setName(name);
@@ -49,7 +50,7 @@ function Account() {
                 setPassword(password);
             })
             .catch((error) => {
-                console.error(error);
+                displayErrorMessage('Une erreur s\'est produite dans la mise à jour de votre compte', error);
                 setError('Une erreur s\'est produite');
             });
     }

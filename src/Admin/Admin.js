@@ -1,36 +1,43 @@
-import React, {useState, useEffect} from "react";
-import {sendPasswordResetEmail} from "firebase/auth";
+import React, {useEffect, useState} from "react";
 import {Navbar} from "../Navbar/Navbar";
-import {Table, Button} from 'rsuite';
-import {collection, query, getDocs, doc, getDoc, updateDoc} from "firebase/firestore";
-import {db, auth} from "../firebase/firebaseConfig";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faEnvelope} from '@fortawesome/free-solid-svg-icons'
-import {useNavigate} from "react-router-dom";
-import Swal from "sweetalert2";
-
-
+import {Button, Table} from 'rsuite';
+import axios from "axios";
+import {headers, url} from "../environment";
+import {displayErrorMessage, displaySuccessMessage} from "../utils/swal";
 const {Column, HeaderCell, Cell} = Table;
 
 const CompactCell = props => <Cell {...props} style={{padding: 4}}/>;
 const CompactHeaderCell = props => <HeaderCell {...props} style={{padding: 4}}/>;
 
 function Admin() {
-    const navigate = useNavigate();
-    checkAdmin(navigate);
-    const defaultColumns = [{
-        key: 'email', label: 'Email', fixed: true, width: 130
-    }, {
-        key: 'dateCreationAccount', label: 'Date de création du compte', fixed: true, width: 120
-    }, {
-        key: 'dateLastConnection', label: 'Date de dernière connexion', fixed: true, width: 120
-    }, {
-        key: 'action', label: 'Action', fixed: true, width: 700
+    const defaultColumns = [
+        {
+            key: 'id', label: 'Id', fixed: true, width: 50
+        },
+        {
+            key: 'name', label: 'Prenom', fixed: true, width: 120
+        },
+        {
+            key: 'forename', label: 'Nom', fixed: true, width: 120
+        },
+        {
+            key: 'email', label: 'Mail', fixed: true, width: 250
+        },
+        {
+            key: 'isadmin', label: 'Administrateur', fixed: true, width: 120
+        },
+        {
+            key: 'status', label: 'Compte activé', fixed: true, width: 120
+        },
+        {
+            key: 'creationDate', label: 'Date de création du compte', fixed: true, width: 120
+        },
+        {
+            key: 'action', label: 'Action', fixed: true, width: 700
+        }
+    ];
 
-    }];
-
-    const [data, setData] = useState([]);
-    // const [loading, setLoading] = useState(false);
+    const [users, setUsers] = useState([]);
     const [compact] = useState(true);
     const [bordered,] = useState(true);
     const [noData] = React.useState(false);
@@ -43,7 +50,7 @@ function Admin() {
 
     useEffect(() => {
         getData();
-    } , []);
+    }, []);
 
 
     return (<div>
@@ -55,7 +62,7 @@ function Admin() {
                 hover={true}
                 showHeader={true}
                 autoHeight={true}
-                data={noData ? [] : data}
+                data={noData ? [] : users}
                 bordered={true}
                 cellBordered={bordered}
                 headerHeight={40}
@@ -73,180 +80,75 @@ function Admin() {
     </div>);
 
     async function getData() {
-        const q = query(collection(db, "users"));
-
-        const querySnapshot = await getDocs(q);
-        const users = [];
-        querySnapshot.forEach((doc) => {
-
-            const user = {
-                userId: doc.id,
-                email: doc.data().email,
-                dateCreationAccount: convertDate(doc.data().dateCreationAccount),
-                dateLastConnection: convertDate(doc.data().lastConnection),
-                action: <div>
-                    <Button appearance="link" onClick={() => sendPasswordReset(doc.data().email)}>
-                        <FontAwesomeIcon icon={faEnvelope}/>
+        axios.get(`${url}/user`, {
+            headers: headers
+        })
+        .then((res) => {
+            const users =res.data.data.users;
+            users.map(user => {
+                user.action=
+                    <div>
+                    <Button appearance="link" onClick={() => updateRole(user)}>
+                        {user.isadmin ? 'Retirer les droits' : 'Donner les droits'}
                     </Button>
-
-                    <Button appearance="link" onClick={() => toggleRole(doc.id)}>
-                        {doc.data().role === 'ADMIN' ? 'Retirer les droits' : 'Donner les droits'}
+                    <Button appearance="link" onClick={() => updateStatus(user)}>
+                        {user.status ? 'Désactiver le compte' : 'Activer le compte'}
                     </Button>
-                    <Button appearance="link" onClick={() => toggleUser(doc.id)}>
-                        {doc.data().status ? 'Désactiver le compte' : 'Activer le compte'}
+                    <Button appearance="link" onClick={() => deleteUser(user)}>
+                       Supprimer le compte
                     </Button>
                 </div>
-            };
-            users.push(user);
+            });
+            setUsers(users);
         });
-        setData(users);
-    }
 
-    async function toggleRole(userId) {
-        // Get role from userId
-        const docRef = doc(db, "users", userId);
-        const docSnap = await getDoc(docRef);
+        function updateRole(user) {
+            const apiUrl = `${url}/user/${user.id}`;
 
-        if (docSnap.exists()) {
-            const role = docSnap.data().role;
-            if (role === 'ADMIN') {
-                updateDoc(docRef, {
-                    role: 'USER'
-                })
-                    .then(() => {
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Droits retirés !',
-                            showConfirmButton: false,
-                            timer: 1000
-                        })
-                    })
-                    .catch((error) => {
-                        Swal.fire({
-                            icon: 'error', title: 'Oops...', text: 'Une erreur est survenue \n' + error,
-                        })
-                    });
-            } else if (role === 'USER') {
-                updateDoc(docRef, {
-                    role: 'ADMIN'
-                })
-                    .then(() => {
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Droits donnés !',
-                            showConfirmButton: false,
-                            timer: 1000
-                        })
-                    })
-                    .catch((error) => {
-                        Swal.fire({
-                            icon: 'error', title: 'Oops...', text: 'Une erreur est survenue \n' + error,
-                        })
-                    });
-            }
-
-            getData();
-        } else {
-            Swal.fire({
-                icon: 'error', title: 'Oops...', text: 'Une erreur est survenue',
+            axios.put(apiUrl, {
+                isadmin: !user.isadmin,
+                // isadmin: user.isadmin === 0 ? 1 : 0,
+            }, {
+                headers: headers,
             })
+                .then(() => {
+                    displaySuccessMessage(`Le role de l'utilisateur ${ user.name } ${ user.forename } a bien été mis à jour`);
+                })
+                .catch(error => {
+                    displayErrorMessage('Une erreur s\'est produite dans la mise à jour de l\'utilisateur', error);
+                });
         }
-    }
 
+        function updateStatus(user) {
+            const apiUrl = `${url}/user/${user.id}`;
 
-    async function toggleUser(userId) {
-        const docRef = doc(db, "users", userId);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            const status = docSnap.data().status;
-            if (status) {
-                updateDoc(docRef, {
-                    status: false
-                })
-                    .then(() => {
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Compte désactivé !',
-                            showConfirmButton: false,
-                            timer: 1000
-                        })
-                    })
-                    .catch((error) => {
-                        Swal.fire({
-                            icon: 'error', title: 'Oops...', text: 'Une erreur est survenue \n' + error,
-                        })
-                    });
-            } else {
-                updateDoc(docRef, {
-                    status: true
-                })
-                    .then(() => {
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Compte activé !',
-                            showConfirmButton: false,
-                            timer: 1000
-                        })
-                    })
-                    .catch((error) => {
-                        Swal.fire({
-                            icon: 'error', title: 'Oops...', text: 'Une erreur est survenue \n' + error,
-                        })
-                    });
-            }
-
-            getData();
-        } else {
-            Swal.fire({
-                icon: 'error', title: 'Oops...', text: 'Une erreur est survenue',
+            axios.put(apiUrl, {
+                status: !user.status,
+                // isadmin: user.isadmin === 0 ? 1 : 0,
+            }, {
+                headers: headers,
             })
+                .then(() => {
+                    displaySuccessMessage(`Le status de l'utilisateur ${ user.name } ${ user.forename } a bien été mis à jour`);
+                })
+                .catch(error => {
+                    displayErrorMessage('Une erreur s\'est produite dans la mise à jour de l\'utilisateur', error);
+                });
+        }
+
+        function deleteUser(user) {
+            const apiUrl = `${url}/user/${user.id}`;
+
+            axios.delete(apiUrl, {
+                headers: headers,
+            })
+                .then(() => {
+                    displaySuccessMessage(`L'utilisateur ${ user.name } ${ user.forename } a bien été supprimé`);
+                })
+                .catch(error => {
+                    displayErrorMessage('Une erreur s\'est produite dans la suppression de l\'utilisateur', error);
+                });
         }
     }
 }
-
-function convertDate(date) {
-    return date.toDate().toLocaleDateString();
-}
-
-
-function sendPasswordReset(email) {
-    sendPasswordResetEmail(auth, email)
-        .then(() => {
-            Swal.fire({
-                position: 'top-end', icon: 'success', title: 'Mail envoyé !', showConfirmButton: false, timer: 1000
-            })
-        })
-        .catch((error) => {
-            Swal.fire({
-                icon: 'error', title: 'Oops...', text: 'Une erreur est survenue \n' + error,
-            })
-        });
-}
-
-async function checkAdmin(navigate) {
-    const uid = localStorage.getItem('uid');
-    const docRef = doc(db, "users", uid);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-        const role = docSnap.data().role;
-        if (role !== 'ADMIN') {
-            return redirectToHome(navigate);
-        }
-    } else {
-        Swal.fire({
-            icon: 'error', title: 'Oops...', text: 'Une erreur est survenue',
-        })
-    }
-}
-
-function redirectToHome(navigate) {
-    navigate('/dashboard');
-}
-
-export {Admin};
+export { Admin };
