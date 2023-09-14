@@ -13,7 +13,6 @@ function Account() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showForm, setShowForm] = useState(false);
-    const [error, setError] = useState("");
 
     useEffect(() => {
         const id = localStorage.getItem('id');
@@ -51,7 +50,6 @@ function Account() {
             })
             .catch((error) => {
                 displayErrorMessage('Une erreur s\'est produite dans la mise à jour de votre compte', error);
-                setError('Une erreur s\'est produite');
             });
     }
 
@@ -93,7 +91,6 @@ function Account() {
                                            onChange={(e) => setPassword(e)}/>
                                 </div>
                                 <Button type="button" onClick={updateUser}>Enregistrer les modifications</Button>
-                                {error && <p className="error-message">{error}</p>}
                             </form>
                         )}
                     </>

@@ -12,7 +12,6 @@ function Login() {
     const [forename, setForename] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState(null);
 
     const navigate = useNavigate();
 
@@ -39,8 +38,8 @@ function Login() {
                     }
                 });
             })
-            .catch(() => {
-                setError('Une erreur s\'est produite');
+            .catch(error => {
+                displayErrorMessage('Une erreur s\'est produite lors de la connexion', error);
             });
     };
 
@@ -60,8 +59,8 @@ function Login() {
                 localStorage.setItem('id', res.data.data.id);
                 redirectToDashboard(navigate);
             })
-            .catch(() => {
-                setError('Une erreur s\'est produite');
+            .catch(error => {
+                displayErrorMessage('Une erreur s\'est produite lors de l\'inscription', error);
             });
     };
 
@@ -112,22 +111,20 @@ function Login() {
                 <div className="signup">
                     <h2 ref={signupBtn} className="form-title" id="signup"><span>or</span>Sign up</h2>
                     <div className="form-holder">
-                        <input type="text" className="input" value={name} onChange={e => setName(e.target.value)}/>
-                        <input type="text" className="input" value={forename} onChange={e => setForename(e.target.value)}/>
-                        <input type="text" className="input" value={email} onChange={e => setEmail(e.target.value)}/>
-                        <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)}/>
+                        <input type="text" placeholder="Prénom" className="input" value={name} onChange={e => setName(e.target.value)}/>
+                        <input type="text" placeholder="Nom" className="input" value={forename} onChange={e => setForename(e.target.value)}/>
+                        <input type="text" placeholder="Email" className="input" value={email} onChange={e => setEmail(e.target.value)}/>
+                        <input type="password" placeholder="Mot de passe" className="input" value={password} onChange={e => setPassword(e.target.value)}/>
                     </div>
-                    {error && <p className="error-message">{error}</p>}
                     <button onClick={handleSignUp} className="submit-btn">Sign up</button>
                 </div>
                 <div className="login slide-up">
                     <div className="center">
                         <h2 ref={loginBtn} className="form-title" id="login"><span>or</span>Log in</h2>
                         <div className="form-holder">
-                            <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)}/>
-                            <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} />
+                            <input type="email" placeholder="Email" className="input" value={email} onChange={e => setEmail(e.target.value)}/>
+                            <input type="password" placeholder="Mot de passe" className="input" value={password} onChange={e => setPassword(e.target.value)} />
                         </div>
-                        {error && <p className="error-message">{error}</p>}
                         <button onClick={handleLogin} className="submit-btn">Log in</button>
                     </div>
                 </div>

@@ -106,8 +106,7 @@ function Admin() {
             const apiUrl = `${url}/user/${user.id}`;
 
             axios.put(apiUrl, {
-                isadmin: !user.isadmin,
-                // isadmin: user.isadmin === 0 ? 1 : 0,
+                isadmin: !user.isadmin
             }, {
                 headers: headers,
             })
@@ -123,8 +122,7 @@ function Admin() {
             const apiUrl = `${url}/user/${user.id}`;
 
             axios.put(apiUrl, {
-                status: !user.status,
-                // isadmin: user.isadmin === 0 ? 1 : 0,
+                status: !user.status
             }, {
                 headers: headers,
             })
