@@ -89,25 +89,19 @@ function Dashboard() {
             <Form>
                 <Form.Group controlId="serverName">
                     <Form.ControlLabel>Nom du serveur</Form.ControlLabel>
-                    <Form.Control name="serverName" onChange={(e) => setServerName(e)} autoComplete="off" />
+                    <Form.Control name="serverName"  onChange={(e) => setServerName(e)} autoComplete="off" />
                     <Form.HelpText>Champ requis</Form.HelpText>
                 </Form.Group>
                 <Form.Group controlId="serverSize">
                     <Form.ControlLabel>Stockage (en Go)</Form.ControlLabel>
-                    <Form.Control name="serverSize" type="number"  onChange={(e) => setServerSize(e)} autoComplete="off" />
+                    <Form.Control name="serverSize" type="number" onChange={(e) => setServerSize(e)} autoComplete="off" />
                     <Form.HelpText>Champ requis</Form.HelpText>
                 </Form.Group>
                 <Form.Group controlId="serverSize">
                 <Form.ControlLabel>Nombre de serveur</Form.ControlLabel>
-                <Form.Control name="serverCount" type="number"  onChange={(e) => setServerCount(e)} autoComplete="off" />
+                <Form.Control name="serverCount" value="1" type="number" onChange={(e) => setServerCount(e)} autoComplete="off" />
                 <Form.HelpText>Champ requis</Form.HelpText>
             </Form.Group>
-                <Form.Group>
-                    <ButtonToolbar>
-                        <Button appearance="primary">Submit</Button>
-                        <Button appearance="default">Cancel</Button>
-                    </ButtonToolbar>
-                </Form.Group>
             </Form>
             </Modal.Body>
             <Modal.Footer>

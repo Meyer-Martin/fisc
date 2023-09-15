@@ -1,4 +1,3 @@
-import "firebase/auth";
 import {useEffect, useRef, useState} from 'react';
 import "rsuite/dist/rsuite.min.css";
 import "./Login.css";
@@ -8,15 +7,17 @@ import {url} from "../environment";
 import {displayErrorMessage} from "../utils/swal";
 
 function Login() {
-    const [name, setName] = useState("");
-    const [forename, setForename] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [name, setName] = useState("azdazdadd");
+    const [forename, setForename] = useState("azdazdazd");
+    const [email, setEmail] = useState("azdazdazd@gmail.com");
+    const [password, setPassword] = useState("azdazdzad");
 
     const navigate = useNavigate();
 
     const handleLogin = (e) => {
-        e.preventDefault();
+        if (e) {
+            e.preventDefault();
+        }
         axios.post(`${url}/user/login`, {
             email, password
         })
@@ -53,11 +54,9 @@ function Login() {
             isadmin: false,
             status: true
         })
-            .then((res) => {
-                const token = res.data.data.token;
-                localStorage.setItem('token', token);
-                localStorage.setItem('id', res.data.data.id);
-                redirectToDashboard(navigate);
+            .then(() => {
+                // Sign in user
+                handleLogin();
             })
             .catch(error => {
                 displayErrorMessage('Une erreur s\'est produite lors de l\'inscription', error);
