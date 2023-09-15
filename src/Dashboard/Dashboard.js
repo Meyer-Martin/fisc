@@ -45,6 +45,7 @@ function Dashboard() {
     // Form add a server
     const [serverName, setServerName] = React.useState("");
     const [serverSize, setServerSize] = React.useState("");
+    const [serverCount, setServerCount] = React.useState("");
 
     useEffect(() => {
         getServers();
@@ -96,6 +97,11 @@ function Dashboard() {
                     <Form.Control name="serverSize" type="number"  onChange={(e) => setServerSize(e)} autoComplete="off" />
                     <Form.HelpText>Champ requis</Form.HelpText>
                 </Form.Group>
+                <Form.Group controlId="serverSize">
+                <Form.ControlLabel>Nombre de serveur</Form.ControlLabel>
+                <Form.Control name="serverCount" type="number"  onChange={(e) => setServerCount(e)} autoComplete="off" />
+                <Form.HelpText>Champ requis</Form.HelpText>
+            </Form.Group>
                 <Form.Group>
                     <ButtonToolbar>
                         <Button appearance="primary">Submit</Button>
@@ -120,6 +126,7 @@ function Dashboard() {
         axios.post(`${url}/server`, {
             serverName,
             serverSize,
+            serverCount,
             user_id: localStorage.getItem('id')
         })
             .then(() => {
