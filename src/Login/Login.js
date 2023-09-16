@@ -7,10 +7,10 @@ import {url} from "../environment";
 import {displayErrorMessage} from "../utils/swal";
 
 function Login() {
-    const [name, setName] = useState("azdazdadd");
-    const [forename, setForename] = useState("azdazdazd");
-    const [email, setEmail] = useState("azdazdazd@gmail.com");
-    const [password, setPassword] = useState("azdazdzad");
+    const [name, setName] = useState("");
+    const [forename, setForename] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     const navigate = useNavigate();
 
