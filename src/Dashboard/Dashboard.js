@@ -1,7 +1,7 @@
 import {displayErrorMessage, displaySuccessMessage} from "../utils/swal";
 import React, {useEffect, useState} from "react";
 import {Navbar} from "../Navbar/Navbar";
-import {Button, ButtonToolbar, Form, Modal, Table} from 'rsuite';
+import {Button, ButtonToolbar, Form, Loader, Modal, Table} from 'rsuite';
 import axios from "axios";
 import {headers, url} from "../environment";
 const {Column, HeaderCell, Cell} = Table;
@@ -19,6 +19,9 @@ function Dashboard() {
         },
         {
             key: 'serverSize', label: 'Taille du Serveur (en GO)', fixed: true, width: 200
+        },
+        {
+            key: 'serverIP', label: 'Adresse IP du Serveur', fixed: true, width: 200
         },
         {
             key: 'action', label: 'Action', fixed: true, width: 700
@@ -46,6 +49,10 @@ function Dashboard() {
     const [serverName, setServerName] = React.useState("");
     const [serverSize, setServerSize] = React.useState("");
     const [serverCount, setServerCount] = React.useState("");
+
+
+    //Loading
+    const [isLoading, setIsLoading] = React.useState(false);
 
     useEffect(() => {
         getServers();
@@ -99,9 +106,10 @@ function Dashboard() {
                 </Form.Group>
                 <Form.Group controlId="serverSize">
                 <Form.ControlLabel>Nombre de serveur</Form.ControlLabel>
-                <Form.Control name="serverCount" value="1" type="number" onChange={(e) => setServerCount(e)} autoComplete="off" />
+                <Form.Control name="serverCount" type="number" onChange={(e) => setServerCount(e)} autoComplete="off" />
                 <Form.HelpText>Champ requis</Form.HelpText>
             </Form.Group>
+                {isLoading ? <Loader size="md" /> : null }
             </Form>
             </Modal.Body>
             <Modal.Footer>
@@ -117,14 +125,16 @@ function Dashboard() {
 
 
     function createServer() {
+        setIsLoading(true);
         axios.post(`${url}/server`, {
             serverName,
-            serverSize,
-            serverCount,
-            user_id: localStorage.getItem('id')
+            serverSize: Number(serverSize),
+            serverCount: Number(serverCount),
+            user_id: Number(localStorage.getItem('id'))
         })
             .then(() => {
                 displaySuccessMessage('Le serveur a bien été créé');
+                setIsLoading(false);
                 getServers();
                 handleCloseModal();
             })
@@ -171,8 +181,8 @@ function Dashboard() {
         })
             .then(() => {
                 displaySuccessMessage('Le serveur a bien été supprimé');
-                const servers = this.servers.filter(s => s.id !== server.id);
-                setServers(servers);
+                const filterServers = servers.filter(s => s.id !== server.id);
+                setServers(filterServers);
             })
             .catch(error => {
                 displayErrorMessage('Une erreur s\'est produite dans la suppression du serveur', error);
